@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Home - 148th文化祭：参団トラッキングシステム</title>
+		<link type="text/css" rel="stylesheet" href="css/css.css" />
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-auth.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-database.js"></script>
+		<script>
+		var firebaseConfig = {
+			apiKey: "AIzaSyBKrxJCj-Capk_g2ZpNzC6glKt2selnGzY",
+			authDomain: "bunkasai-tracking-2019.firebaseapp.com",
+			databaseURL: "https://bunkasai-tracking-2019.firebaseio.com",
+			projectId: "bunkasai-tracking-2019",
+			storageBucket: "",
+			messagingSenderId: "288613827333",
+			appId: "1:288613827333:web:6549ae981c103ba0"
+		};
+		firebase.initializeApp(firebaseConfig);
+		</script>
+	</head>
+	<body>
+		<nav id="nav-bar"></nav>
+		<hr />
+		<div class="content">
+			<h2>Home</h2>
+			<h3>このウェブサイトは何か？</h3>
+			<p>このウェブサイトは、148th文化祭の参団の活動や進捗などを管理するシステムです。</p>
+			<p>以下のような機能があります。</p>
+			<ul>
+				<li>参団の開始報告・終了報告</li>
+				<li>活動状況の表示</li>
+				<li>参団の作業進捗状況の管理</li>
+				<li>参団係の出欠確認</li>
+				<li>etc...</li>
+			</ul>
+			<hr />
+			<h3>表示スクリーン</h3>
+			<p><a href="report-screen.html">リンク</a></p>
+		</div>
+		<script src="js/set-nav.js"></script>
+		<script src="js/login-check.js"></script>
+	</body>
+</html>

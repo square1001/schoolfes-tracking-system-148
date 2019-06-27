@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ログイン - 148th文化祭：参団トラッキングシステム</title>
+		<link type="text/css" rel="stylesheet" href="css/css.css" />
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-auth.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-database.js"></script>
+		<script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+		<link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+		<script>
+		var firebaseConfig = {
+			apiKey: "AIzaSyBKrxJCj-Capk_g2ZpNzC6glKt2selnGzY",
+			authDomain: "bunkasai-tracking-2019.firebaseapp.com",
+			databaseURL: "https://bunkasai-tracking-2019.firebaseio.com",
+			projectId: "bunkasai-tracking-2019",
+			storageBucket: "",
+			messagingSenderId: "288613827333",
+			appId: "1:288613827333:web:6549ae981c103ba0"
+		};
+		firebase.initializeApp(firebaseConfig);
+		var ui = new firebaseui.auth.AuthUI(firebase.auth());
+		ui.start('#firebaseui-auth-container', {
+			callbacks: {
+				signInSuccessWithAuthResult: function (authResult, redirectUrl) {
+					document.getElementById('firebaseui-auth-container').style.display = 'none';
+					return true;
+				},
+			},
+			signInFlow: "popup",
+			credentialHelper: firebaseui.auth.CredentialHelper.NONE,
+			signInOptions: [
+				firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+			],
+		});
+		</script>
+	</head>
+	<body>
+		<nav id="nav-bar"></nav>
+		<hr />
+		<div class="content">
+			<h2>Login Page</h2>
+			<h3>概要</h3>
+			<p>これはログインするページです。</p>
+			<h3>注意点</h3>
+			<ul>
+				<li>4桁番号は<span style="color: red">数字で</span>入力してください。</li>
+				<li>名前は<span style="color: red">半角カタカナで</span>入力してください。</li>
+			</ul>
+			<div class="form-base">
+				<div class="form-group">
+					<div class="form-group-left">
+						<label for="student-id">4桁番号</label>
+					</div>
+					<div class="form-group-right">
+						<input type="text" id="student-id" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="form-group-left">
+						<label for="student-name">名前</label>
+					</div>
+					<div class="form-group-right">
+						<input type="text" id="student-name" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="form-group-left">
+						<label for="password-input">パスワード (総務用)</label>
+					</div>
+					<div class="form-group-right">
+						<input type="password" id="password-input" />
+					</div>
+				</div>
+				<div id="firebaseui-auth-container"></div>
+				<div class="form-group">
+					<div class="form-group-right">
+						<button id="submit-login" onclick="login_validation()">提出！</button>
+					</div>
+				</div>
+				<p id="login-verdict" style="color: red"></p>
+			</div>
+		</div>
+		<script src="js/set-nav.js"></script>
+		<script src="js/checkname.js"></script>
+		<script src="js/login-check.js"></script>
+	</body>
+</html>

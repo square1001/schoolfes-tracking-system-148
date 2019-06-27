@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>参団活動記録 - 148th文化祭：参団トラッキングシステム</title>
+		<link type="text/css" rel="stylesheet" href="/css/css.css" />
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-auth.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-database.js"></script>
+		<script>
+		var firebaseConfig = {
+			apiKey: "AIzaSyBKrxJCj-Capk_g2ZpNzC6glKt2selnGzY",
+			authDomain: "bunkasai-tracking-2019.firebaseapp.com",
+			databaseURL: "https://bunkasai-tracking-2019.firebaseio.com",
+			projectId: "bunkasai-tracking-2019",
+			storageBucket: "",
+			messagingSenderId: "288613827333",
+			appId: "1:288613827333:web:6549ae981c103ba0"
+		};
+		firebase.initializeApp(firebaseConfig);
+		</script>
+	</head>
+	<body>
+		<nav id="nav-bar"></nav>
+		<hr />
+		<div class="content">
+			<h2>参団活動記録</h2>
+			<h3>参団活動日数の統計</h3>
+			<p>各参団の活動日数の統計は、<a href="activity-table.html">このリンク</a>の先にあります。</p>
+			<h3>参団を選ぶ</h3>
+			<p>
+				参団を選んでください：
+				<select id="sandan-option" onchange="sandan_change()"></select>
+			</p>
+			<button onclick="set_everything()">表示</button>
+			<p id="button-message" style="color: red"></p>
+			<hr />
+			<div id="stats-main" style="display: none">
+				<h3>基本的な情報</h3>
+				<p>以下、参団の基本的な情報です。</p>
+				<ul id="info-list"></ul>
+				<hr />
+				<h3>参団活動記録</h3>
+				<p>参団の開始報告・終了報告のリストです。</p>
+				<table id="activity-table"></table>
+				<p id="activity-table-message" style="color: red"></p>
+				<hr />
+				<h3>参団の事故記録</h3>
+				<p>参団が起こした事故のリストです。</p>
+				<table id="accident-table"></table>
+				<p id="accident-table-message" style="color: red"></p>
+				<hr />
+				<h3>参団の進捗の変動</h3>
+				<p>参団の進捗の変動です。</p>
+				<table id="progress-table"></table>
+				<p id="progress-table-message" style="color: red"></p>
+				<hr />
+				<h3>参団のペナルティーの変動</h3>
+				<p>参団のペナルティーの変動です。</p>
+				<table id="penalty-table"></table>
+				<p id="penalty-table-message" style="color: red"></p>
+			</div>
+		</div>
+		<script src="/js/set-nav.js"></script>
+		<script src="/js/login-check.js"></script>
+		<script src="js/selection.js"></script>
+		<script src="js/stats.js"></script>
+		<script>
+			function sandan_change() {
+				var sandan_object = document.getElementById("sandan-option");
+				var sandan_val = sandan_object.options[sandan_object.selectedIndex].value;
+				if(sandan_val == "none") {
+					document.getElementById("stats-main").style = "display: none";
+				}
+			}
+		</script>
+		<script>
+			if(document.cookie.indexOf("login-id=") == -1) {
+				window.location.href = "/login.html";
+			}
+		</script>
+	</body>
+</html>

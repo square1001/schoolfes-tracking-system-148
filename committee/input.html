@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>文準関連 - 148th文化祭：参団トラッキングシステム</title>
+		<link type="text/css" rel="stylesheet" href="/css/css.css" />
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-auth.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-database.js"></script>
+		<script>
+		var firebaseConfig = {
+			apiKey: "AIzaSyBKrxJCj-Capk_g2ZpNzC6glKt2selnGzY",
+			authDomain: "bunkasai-tracking-2019.firebaseapp.com",
+			databaseURL: "https://bunkasai-tracking-2019.firebaseio.com",
+			projectId: "bunkasai-tracking-2019",
+			storageBucket: "",
+			messagingSenderId: "288613827333",
+			appId: "1:288613827333:web:6549ae981c103ba0"
+		};
+		firebase.initializeApp(firebaseConfig);
+		</script>
+	</head>
+	<body>
+		<nav id="nav-bar"></nav>
+		<div class="content">
+			<h2>文準関連</h2>
+			<p>文化祭準備委員会の参団係に関連する操作を行います。</p>
+			<div id="stats-link-main">
+				<h3>活動確認</h3>
+				<p>下級生日誌・総務日誌・下級生の出欠をチェックします。</p>
+				<ul>
+					<li><a href="diary-stats.html">下級生日誌・総務日誌の記録</a></li>
+					<li><a href="attendance-stats.html">出席確認の記録</a></li>
+				</ul>
+			</div>
+			<div id="diary-main">
+				<h3>下級生／総務日誌</h3>
+				<p>ここでは、<span id="diary-type" style="color: red"></span> を書きます。</p>
+				<div class="form-base">
+					<div class="form-group">
+						<p>日誌の内容を下のテキストボックスに (300～400 字くらいに収めて) 書いてください。</p>
+						<textarea rows="9" cols="80" id="diary-content"></textarea>
+					</div>
+					<div class="form-group">
+						<button onclick="report_diary()">提出！</button>
+					</div>
+					<p id="diary-report-message" style="color: red"></p>
+				</div>
+			</div>
+			<hr />
+			<div id="attendance-main">
+				<h3>出席確認</h3>
+				<p>ここでは、出席確認をします。</p>
+				<p>出席している参団係のメンバーを記入してください。</p>
+				<div class="form-base">
+					<p>現在の人数： <span style="color: red"><span id="current-attendance"></span> 人</span></p>
+					<div class="form-group">
+						<table id="attendance-table">
+							<tr>
+								<th><a onclick="add_row()">＋</a></th>
+								<th width="90">4 桁番号</th>
+								<th width="150">氏名 (カタカナ)</th>
+							</tr>
+						</table>
+					</div>
+					<div class="form-group">
+						<button onclick="report_attendance()">提出！</button>
+					</div>
+					<p id="attendance-report-message" style="color: red"></p>
+				</div>
+			</div>
+		</div>
+		<script src="/js/set-nav.js"></script>
+		<script src="/js/login-check.js"></script>
+		<script src="js/input.js"></script>
+		<script>
+			var status = get_status();
+			if(status == "none") {
+				document.getElementById("diary-type").innerHTML = "下級生日誌";
+				document.getElementById("stats-link-main").style = "display: none";
+			}
+			else {
+				document.getElementById("diary-type").innerHTML = "総務日誌";
+			}
+		</script>
+		<script>
+			if(document.cookie.indexOf("login-id=") == -1) {
+				window.location.href = "/login.html";
+			}
+		</script>
+	</body>
+</html>

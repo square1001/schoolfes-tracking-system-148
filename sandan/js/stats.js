@@ -1,0 +1,188 @@
+// ---------- Make List of Basic Informations ---------- //
+function set_information_list() {
+	var sandan_object = document.getElementById("sandan-option");
+	var current_sandan = sandan_object.options[sandan_object.selectedIndex].value;
+	var inforef = firebase.database().ref().child("sandan-info/" + current_sandan);
+	inforef.once("value", function(snapshot) {
+		var content = "";
+		content += "<li>参団名：　" + snapshot.child("sandan-name").val() + "</li>";
+		content += "<li>参団番号：　" + snapshot.key.substring(7) + "</li>"; // take "xx" from "sandan-xx"
+		if(snapshot.child("chief-id").val() != null) {
+			content += "<li>参団責任者：　" + snapshot.child("chief-id").val() + "　" + snapshot.child("chief-name").val() + "</li>";
+		}
+		if(snapshot.child("subchief-id").val() != null) {
+			content += "<li>参団副責任者：　" + snapshot.child("subchief-id").val() + "　" + snapshot.child("subchief-name").val() + "</li>";
+		}
+		if(snapshot.child("supervisor-id").val() != null) {
+			content += "<li>顧問：　" + snapshot.child("supervisor-id").val() + "　" + snapshot.child("supervisor-name").val() + "</li>";
+		}
+		if(snapshot.child("contact").val() != null) {
+			content += "<li>連絡先：　" + snapshot.child("contact").val() + "</li>";
+		}
+		document.getElementById("info-list").innerHTML = content;
+	});
+}
+
+// ---------- Make Table of Activities of SANDAN ---------- //
+function set_activity_table() {
+	document.getElementById("activity-table-message").innerHTML = "データを取得中です・・・";
+	var sandan_object = document.getElementById("sandan-option");
+	var current_sandan = sandan_object.options[sandan_object.selectedIndex].value;
+	var activity_ref = firebase.database().ref("activities/" + current_sandan);
+	activity_ref.once("value", function(snapshot) {
+		var content = "";
+		content += "<tr>";
+		content += "<th>#</th>";
+		content += "<th>開始時刻</th>";
+		content += "<th>終了時刻</th>";
+		content += "<th>活動場所</th>";
+		content += "<th colspan=\"2\">活動責任者</th>";
+		content += "<th colspan=\"2\">入力者 (開始報告)</th>";
+		content += "<th colspan=\"2\">入力者 (終了報告)</th>";
+		content += "</tr>";
+		snapshot.forEach(i => {
+			var dt_start = i.child("start-time").val();
+			if(dt_start != null) dt_start = new Date(dt_start);
+			var dt_finish = i.child("finish-time").val();
+			if(dt_finish != null) dt_finish = new Date(dt_finish);
+			var subcontent = "";
+			subcontent += "<tr>";
+			subcontent += "<td>" + parseInt(i.key.substr(8)) + "</td>"; // take "xxxxxx" from i.key = "request-xxxxxx"
+			subcontent += "<td>" + (dt_start == null ? "" : dt_start.toLocaleDateString() + " " + dt_start.toLocaleTimeString()) + "</td>";
+			subcontent += "<td>" + (dt_finish == null ? "" : dt_finish.toLocaleDateString() + " " + dt_finish.toLocaleTimeString()) + "</td>";
+			subcontent += "<td>" + (i.child("place").val()) + "</td>";
+			subcontent += "<td>" + (i.child("responsible-id").val()) + "</td>";
+			subcontent += "<td>" + (i.child("responsible-name").val()) + "</td>";
+			subcontent += "<td>" + (i.child("editor-start-id").val()) + "</td>";
+			subcontent += "<td>" + (i.child("editor-start-name").val()) + "</td>";
+			subcontent += "<td>" + (i.child("editor-finish-id").val() != null ? i.child("editor-finish-id").val() : "") + "</td>";
+			subcontent += "<td>" + (i.child("editor-finish-name").val() != null ? i.child("editor-finish-name").val(): "") + "</td>";
+			subcontent += "</tr>";
+			content += subcontent;
+		});
+		document.getElementById("activity-table-message").innerHTML = "";
+		document.getElementById("activity-table").innerHTML = content;
+	});
+}
+
+// ---------- Make list of accidents ---------- //
+function set_accident_table() {
+	document.getElementById("accident-table-message").innerHTML = "データを取得中です・・・";
+	var sandan_object = document.getElementById("sandan-option");
+	var current_sandan = sandan_object.options[sandan_object.selectedIndex].value;
+	var accident_ref = firebase.database().ref("accidents/" + current_sandan);
+	accident_ref.once("value", function(snapshot) {
+		var content = "";
+		content += "<tr>";
+		content += "<th>#</th>";
+		content += "<th>記入時刻</th>";
+		content += "<th width=\"500\">事故内容</th>";
+		content += "<th colspan=\"2\">入力者</th>";
+		content += "</tr>";
+		snapshot.forEach(i => {
+			var dt = new Date(i.child("time").val());
+			var subcontent = "";
+			subcontent += "<tr>";
+			subcontent += "<td>" + parseInt(i.key.substr(8)) + "</td>"; // take "xxxxxx" from i.key = "request-xxxxxx"
+			subcontent += "<td>" + (dt.toLocaleDateString() + " " + dt.toLocaleTimeString()) + "</td>";
+			subcontent += "<td>" + (i.child("content").val()) + "</td>";
+			subcontent += "<td>" + (i.child("editor-id").val()) + "</td>";
+			subcontent += "<td>" + (i.child("editor-name").val()) + "</td>";
+			subcontent += "</tr>";
+			content += subcontent;
+		});
+		document.getElementById("accident-table-message").innerHTML = "";
+		document.getElementById("accident-table").innerHTML = content;
+	});
+}
+
+// ---------- Make a list of progresses ---------- //
+function set_progress_table() {
+	document.getElementById("progress-table-message").innerHTML = "データを取得中です・・・";
+	var sandan_object = document.getElementById("sandan-option");
+	var current_sandan = sandan_object.options[sandan_object.selectedIndex].value;
+	var progressref = firebase.database().ref("progresses/" + current_sandan);
+	progressref.once("value", function(snapshot) {
+		var content = "";
+		content += "<tr>";
+		content += "<th>#</th>";
+		content += "<th>記入時刻</th>";
+		content += "<th colspan=\"2\">パネル作業</th>";
+		content += "<th colspan=\"2\">特殊組木作業</th>";
+		content += "<th colspan=\"2\">輪転作業</th>";
+		content += "<th colspan=\"2\">その他屋内作業</th>";
+		content += "<th colspan=\"2\">入力者</th>";
+		content += "</tr>";
+		snapshot.forEach(i => {
+			var dt = new Date(i.child("time").val());
+			var subcontent = "";
+			subcontent += "<tr>";
+			subcontent += "<td>" + parseInt(i.key.substr(8)) + "</td>"; // take "xxxxxx" from i.key = "request-xxxxxx"
+			subcontent += "<td>" + (dt.toLocaleDateString() + " " + dt.toLocaleTimeString()) + "</td>";
+			var progress_old = i.child("progress-old").val();
+			var progress_new = i.child("progress-new").val();
+			for(var j = 0; j < 4; ++j) {
+				subcontent += "<td>" + progress_old[j] + "%</td>";
+				subcontent += "<td>" + progress_new[j] + "%</td>";
+			}
+			subcontent += "<td>" + (i.child("editor-id").val()) + "</td>";
+			subcontent += "<td>" + (i.child("editor-name").val()) + "</td>";
+			subcontent += "</tr>";
+			content += subcontent;
+		});
+		document.getElementById("progress-table-message").innerHTML = "";
+		document.getElementById("progress-table").innerHTML = content;
+	});
+}
+
+// ---------- Make a list of penalties  ---------- //
+function set_penalty_table() {
+	document.getElementById("penalty-table-message").innerHTML = "データを取得中です・・・";
+	var sandan_object = document.getElementById("sandan-option");
+	var current_sandan = sandan_object.options[sandan_object.selectedIndex].value;
+	var progressref = firebase.database().ref("penalties/" + current_sandan);
+	progressref.once("value", function(snapshot) {
+		var content = "";
+		content += "<tr>";
+		content += "<th>#</th>";
+		content += "<th>記入時刻</th>";
+		content += "<th colspan=\"2\">ペナルティー値</th>";
+		content += "<th width=\"420\">理由</th>";
+		content += "<th colspan=\"2\">入力者</th>";
+		content += "</tr>";
+		snapshot.forEach(i => {
+			var dt = new Date(i.child("time").val());
+			var subcontent = "";
+			subcontent += "<tr>";
+			subcontent += "<td>" + parseInt(i.key.substr(8)) + "</td>"; // take "xxxxxx" from i.key = "request-xxxxxx"
+			subcontent += "<td>" + (dt.toLocaleDateString() + " " + dt.toLocaleTimeString()) + "</td>";
+			subcontent += "<td>" + (i.child("penalty-old").val()) + "</td>";
+			subcontent += "<td>" + (i.child("penalty-new").val()) + "</td>";
+			subcontent += "<td>" + (i.child("reason").val()) + "</td>";
+			subcontent += "<td>" + (i.child("editor-id").val()) + "</td>";
+			subcontent += "<td>" + (i.child("editor-name").val()) + "</td>";
+			subcontent += "</tr>";
+			content += subcontent;
+		});
+		document.getElementById("penalty-table-message").innerHTML = "";
+		document.getElementById("penalty-table").innerHTML = content;
+	});
+}
+
+// ---------- MAIN FUNCTION TO SET EVERYTHING ---------- //
+function set_everything() {
+	var sandan_object = document.getElementById("sandan-option");
+	var current_sandan = sandan_object.options[sandan_object.selectedIndex].value;
+	if(current_sandan == "none") {
+		document.getElementById("button-message").innerHTML = "参団が選択されていません。";
+	}
+	else {
+		document.getElementById("button-message").innerHTML = "";
+		document.getElementById("stats-main").style = "display: block";
+		set_information_list();
+		set_activity_table();
+		set_accident_table();
+		set_progress_table();
+		set_penalty_table();
+	}
+}

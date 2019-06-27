@@ -1,0 +1,134 @@
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 0px;
+}
+h1 {
+	font-size: 36px;
+	margin: 5px;
+}
+h2 {
+	font-size: 25px;
+}
+h3 {
+	font-size: 20px;
+	border-left: 7px solid #999999;
+	border-bottom: 1px solid #e7e7e7;
+	margin: 15px 0px 15px 0px;
+	padding: 0px 0px 0px 7px;
+}
+p {
+	font-size: 16px;
+	margin: 15px 0px 15px 0px;
+}
+li {
+	font-size: 16px;
+}
+.nav-bar {
+	background-color: #282828;
+	padding: 3px;
+	margin: 0px;
+	width: 100%;
+	overflow: auto;
+}
+.nav-bar>tbody>tr {
+	padding: 0px;
+	margin: 0px;
+}
+.nav-bar>tbody>tr>td {
+	background-color: #111111;
+	padding: 3px;
+	margin: 3px;
+	width: 125px;
+	height: 36px;
+	overflow: auto;
+	float: left;
+	display: table;
+	text-align: center;
+}
+.nav-bar>tbody>tr>td>a {
+	font-size: 21px;
+	color: white;
+	text-decoration: none;
+	display: table-cell;
+	vertical-align: middle;
+}
+.content {
+	padding: 3px;
+	margin: 7px 12px 7px 12px;
+}
+.form-base {
+	padding: 9px;
+	margin: 9px;
+	border: 2px solid #cccccc;
+	width: 700px;
+}
+.form-group {
+	display: block;
+	padding: 3px;
+	margin: 3px;
+	overflow: auto;
+}
+.form-group-left {
+	padding: 2px;
+	width: 250px;
+	text-align: right;
+	display: block;
+	float: left;
+}
+.form-group-right {
+	padding: 2px;
+	width: 400px;
+	display: block;
+	float: right;
+}
+.form-group-left>label {
+	font-size: 16px;
+}
+.form-group-right>input {
+	font-size: 16px;
+}
+select {
+	height: 35px;
+	padding: 0px;
+	font-size: 16px;
+	border: none;
+	border-bottom: 3px #282828 solid;
+	background-color: white;
+	color: black;
+}
+input {
+	font-size: 16px;
+	width: 250px;
+}
+input[type="number"] {
+	width: 50px;
+}
+button {
+	font-size: 22px;
+	background-color: black;
+	color: white;
+	border: 4px ridge gray;
+}
+th {
+	font-size: 16px;
+	font-weight: bold;
+	color: black;
+	background-color: gray;
+	border: 1px solid #282828;
+	text-align: center;
+	min-width: 40px;
+	height: 25px;
+	vertical-align: middle;
+	padding: 0px 7px 0px 7px;
+}
+td {
+	font-size: 16px;
+	color: black;
+	background-color: white;
+	border: 1px solid #282828;
+	text-align: center;
+	min-width: 40px;
+	height: 25px;
+	vertical-align: middle;
+	padding: 0px 7px 0px 7px;
+}

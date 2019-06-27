@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Admin - 148th文化祭：参団トラッキングシステム</title>
+		<link type="text/css" rel="stylesheet" href="/css/css.css" />
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-auth.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-database.js"></script>
+		<script>
+		var firebaseConfig = {
+			apiKey: "AIzaSyBKrxJCj-Capk_g2ZpNzC6glKt2selnGzY",
+			authDomain: "bunkasai-tracking-2019.firebaseapp.com",
+			databaseURL: "https://bunkasai-tracking-2019.firebaseio.com",
+			projectId: "bunkasai-tracking-2019",
+			storageBucket: "",
+			messagingSenderId: "288613827333",
+			appId: "1:288613827333:web:6549ae981c103ba0"
+		};
+		firebase.initializeApp(firebaseConfig);
+		</script>
+	</head>
+	<body>
+		<nav id="nav-bar"></nav>
+		<hr />
+		<div class="content">
+			<h2>Admin</h2>
+			<h3>名前を追加</h3>
+			<ul>
+				<li>4桁番号は<span style="color: red">数字で</span>入力してください。</li>
+				<li>名前 (カタカナ) は<span style="color: red">半角カタカナで</span>入力してください。</li>
+			</ul>
+			<div class="form-base">
+				<div class="form-group">
+					<div class="form-group-left">
+						<label for="student-id">4桁番号</label>
+					</div>
+					<div class="form-group-right">
+						<input type="text" id="student-id" required />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="form-group-left">
+						<label for="student-name-kanji">名前 (漢字)</label>
+					</div>
+					<div class="form-group-right">
+						<input type="text" id="student-name-kanji" required />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="form-group-left">
+						<label for="student-name-katakana">名前 (カタカナ)</label>
+					</div>
+					<div class="form-group-right">
+						<input type="text" id="student-name-katakana" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="form-group-right">
+						<button onclick="addname()">
+							提出
+						</button>
+					</div>
+				</div>
+				<p id="addname-verdict" style="color: red"></p>
+			</div>
+			<h3>参団の情報の編集</h3>
+			<ul>
+				<li>4桁番号は<span style="color: red">数字で</span>入力してください。</li>
+			</ul>
+			<div class="form-base">
+				<div class="form-group">
+					<div class="form-group-left">
+						<label for="sandan-id">参団番号</label>
+					</div>
+					<div class="form-group-right">
+						<input type="text" id="sandan-id">
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="form-group-left">
+						<label for="sandan-name">参団名</label>
+					</div>
+					<div class="form-group-right">
+						<input type="text" id="sandan-name" required />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="form-group-left">
+						<label for="chief-id">参団責任者の 4 桁番号</label>
+					</div>
+					<div class="form-group-right">
+						<input type="text" id="chief-id" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="form-group-left">
+						<label for="subchief-id">参団副責任者の 4 桁番号</label>
+					</div>
+					<div class="form-group-right">
+						<input type="text" id="subchief-id" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="form-group-left">
+						<label for="supervisor-id">顧問の 4 桁番号</label>
+					</div>
+					<div class="form-group-right">
+						<input type="text" id="supervisor-id" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="form-group-left">
+						<label for="contact">連絡先</label>
+					</div>
+					<div class="form-group-right">
+						<input type="text" id="contact" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="form-group-right">
+						<button onclick="sandan_input()">
+							提出
+						</button>
+					</div>
+				</div>
+				<p id="sandan-input-verdict" style="color: red"></p>
+			</div>
+			<h3>総務用パスワードの変更</h3>
+			<div class="form-base">
+				<div class="form-group">
+					<div class="form-group-left">
+						<label for="password-type">パスワードの種類</label>
+					</div>
+					<div class="form-group-right">
+						<select id="password-type">
+							<option value="executive">総務用</option>
+							<option value="admin">Admin</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="form-group-left">
+						<label for="new-password">新しいパスワード</label>
+					</div>
+					<div class="form-group-right">
+						<input type="password" id="new-password" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="form-group-right">
+						<button onclick="change_password()">
+							提出
+						</button>
+					</div>
+				</div>
+				<p id="change-password-verdict" style="color: red"></p>
+			</div>
+		</div>
+		<script src="js/set-nav.js"></script>
+		<script src="/js/login-check.js"></script>
+		<script src="js/admin.js"></script>
+		<script>
+			if(document.cookie.indexOf("login-id=") == -1) {
+				window.location.href = "/login.html";
+			}
+			var status = document.cookie.substr(document.cookie.indexOf("status="));
+			if(status.substr(0, 4) == "none" || status.substr(0, 4) == "executive") {
+				window.location.href = "/index.html";
+			}
+		</script>
+	</body>
+</html>

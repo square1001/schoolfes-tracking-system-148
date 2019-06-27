@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>表示スクリーン - 148th文化祭：参団トラッキングシステム</title>
+		<link type="text/css" rel="stylesheet" href="css/css.css" />
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-auth.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-database.js"></script>
+		<script>
+		var firebaseConfig = {
+			apiKey: "AIzaSyBKrxJCj-Capk_g2ZpNzC6glKt2selnGzY",
+			authDomain: "bunkasai-tracking-2019.firebaseapp.com",
+			databaseURL: "https://bunkasai-tracking-2019.firebaseio.com",
+			projectId: "bunkasai-tracking-2019",
+			storageBucket: "",
+			messagingSenderId: "288613827333",
+			appId: "1:288613827333:web:6549ae981c103ba0"
+		};
+		firebase.initializeApp(firebaseConfig);
+		</script>
+	</head>
+	<body>
+		<h1 style="margin: 0px; padding: 10px; font-size: 30px; color: white; background-color: blue;">148th Kaisei Festival: SANDAN Tracking System</h1>
+		<h1 style="margin: 0px; padding: 10px; font-size: 30px; color: white; background-color: lightblue;">表示スクリーン</h1>
+		<div class="content">
+			<h3>活動場所ごとの使用可能区分・使用中の参団　<span id="last-update"></span></h3>
+			<table id="room-state-table"></table>
+		</div>
+		<script src="js/report-screen.js"></script>
+		<script>
+			if(document.cookie.indexOf("login-id=") == -1) {
+				window.location.href = "/login.html";
+			}
+		</script>
+		<script>
+			update_room_state_table();
+		</script>
+	</body>
+</html>
