@@ -1,3 +1,110 @@
+// ---------- Availability Table Section ---------- //
+function set_availability_table() {
+	var dataref = firebase.database().ref("room-state");
+	dataref.once("value", function(snapshot) {
+		var content = "";
+		for(var i = 0; i < valid_place_sep.length - 1; ++i) {
+			content += "<tr>";
+			for(var j = valid_place_sep[i]; j < valid_place_sep[i + 1]; ++j) {
+				content += "<td width=\"78\">" + valid_place[j] + "</td>";
+			}
+			content += "</tr>";
+			content += "<tr>";
+			for(var j = valid_place_sep[i]; j < valid_place_sep[i + 1]; ++j) {
+				var flag = snapshot.child("room-" + fillzero(String(j), 2) + "/availability").val();
+				if(flag == null) flag = true;
+				content += "<td width=\"78\">" + (flag ? "〇" : "✖") + "</td>";
+			}
+			content += "</tr>";
+		}
+		document.getElementById("availability-table").innerHTML = content;
+	});
+}
+function start_editing_availability() {
+	document.getElementById("availability-content").style.display = "block";
+	set_availability_table();
+}
+function change_availability() {
+	document.getElementById("availability-change-message").innerHTML = "データを更新中です・・・";
+	var change_type_object = document.getElementById("change-type");
+	var change_type = change_type_object.options[change_type_object.selectedIndex].value;
+	var rooms = split_string(document.getElementById("change-rooms").value, ',');
+	function set_message(state) {
+		var message = "";
+		if(state == -1) {
+			for(var i = 0; i < failroom.length; ++i) {
+				if(i != 0) message += ", ";
+				message += "「" + failroom[i] + "」";
+			}
+			message += " という部屋名は存在しません。";
+		}
+		if(state == -2) {
+			message = "同じ部屋が 2 回以上現れています。";
+		}
+		if(state == -3) {
+			message += "活動可能区分が" + (change_type == "open" ? "「〇」" : "「✖」") + "なのに、";
+			message += (change_type == "open" ? "「〇 ➡ ✖」" : "「✖ ➡ 〇」") + "としようとしている部屋があります。";
+		}
+		if(state == -4) {
+			message += "使用している参団があるのに、活動可能区分を「✖」にしようとしています。";
+		}
+		if(state == 0) {
+			message = "正常に活動可能区分が切り替わりました！";
+		}
+		document.getElementById("availability-change-message").innerHTML = message;
+	}
+	var failure = 0, failroom = [];
+	for(var i = 0; i < rooms.length; ++i) {
+		for(var j = 0; j < i; ++j) {
+			if(rooms[i] == rooms[j]) {
+				failure = -2;
+			}
+		}
+	}
+	for(var i = 0; i < rooms.length; ++i) {
+		if(valid_place.indexOf(rooms[i]) == -1) {
+			failure = -1;
+			failroom.push(rooms[i]);
+		}
+	}
+	if(failure != 0) {
+		set_message(failure);
+		return;
+	}
+	var stateref = firebase.database().ref("room-state");
+	stateref.once("value", function(snapshot) {
+		for(var i = 0; i < rooms.length; ++i) {
+			var id = valid_place.indexOf(rooms[i]);
+			var state = snapshot.child("/room-" + fillzero(String(id), 2) + "/availability").val();
+			if(state == null) state = true;
+			if((state && change_type == "open") || (!state && change_type == "close")) {
+				failure = -3;
+				break;
+			}
+			var current_used = snapshot.child("/room" + fillzero(String(id), 2) + "/current-used").val();
+			if(current_used == null) current_used = [];
+			if(change_type == "close" && current_used == []) {
+				failure = -4;
+			}
+		}
+		if(failure != 0) {
+			set_message(failure);
+			return;
+		}
+		else {
+			var updates = {};
+			for(var i = 0; i < rooms.length; ++i) {
+				var id = valid_place.indexOf(rooms[i]);
+				updates["/room-" + fillzero(String(id), 2) + "/availability"] = (change_type == "open" ? true : false);
+			}
+			stateref.update(updates).then(function() {
+				set_message(0);
+				set_availability_table();
+			});
+		}
+	});
+}
+
 // ---------- Diary Section ---------- //
 function report_diary() {
 	document.getElementById("diary-report-message").innerHTML = "日誌を送信中です・・・";

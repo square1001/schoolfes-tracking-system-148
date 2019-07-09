@@ -1,3 +1,13 @@
+// ---------- VALID PLACE ARRAY ---------- //
+var valid_place = [
+	"1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+	"H1-1", "H1-2", "H1-3", "H1-4", "H1-5", "H1-6", "H1-7", "H1-8",
+	"H2-1", "H2-2", "H2-3", "H2-4", "H2-5", "H2-6", "H2-7", "H2-8",
+	"H3-1", "H3-2", "H3-3", "H3-4", "H3-5", "H3-6", "H3-7", "H3-8",
+	"予備教室2", "予備教室3", "予備教室4", "その他"
+];
+var valid_place_sep = [ 0, 10, 18, 26, 34, 38 ]; // Separating-Row Index of valid place representing as table
+
 // ---------- Convenient Functions ---------- //
 function fillzero(str, num) {
 	// Fill string str with leading zeros.
@@ -50,6 +60,24 @@ function is_valid_date(year, month, date) {
 	}
 	if(date < 1 || limit < date) return false;
 	return true;
+}
+function split_string(str, splitter) {
+	var ans = [];
+	var pre = 0;
+	for(var i = 0; i < str.length; ++i) {
+		if(str[i] == splitter) {
+			ans.push(str.substring(pre, i));
+			pre = i + 1;
+		}
+	}
+	if(pre != str.length) {
+		ans.push(str.substring(pre, str.length));
+	}
+	for(var i = 0; i < ans.length; ++i) {
+		while(ans[i].length > 0 && ans[i][0] == ' ') ans[i] = ans[i].substring(1);
+		while(ans[i].length > 0 && ans[i][ans[i].length - 1] == ' ') ans[i] = ans[i].substring(0, ans[i].length - 1);
+	}
+	return ans;
 }
 
 // ---------- Retrieve Cookie Informations ---------- //

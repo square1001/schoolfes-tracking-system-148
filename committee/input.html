@@ -33,6 +33,45 @@
 					<li><a href="attendance-stats.html">出席確認の記録</a></li>
 				</ul>
 			</div>
+			<div id="availability-main">
+				<h3>活動可能区分の設定</h3>
+				<p>ここでは、活動可能区分を編集することができます。</p>
+				<button id = "availability-start-button" onclick="start_editing_availability()">編集</button>
+				<div id="availability-content" style="display: none">
+					<p>現在の活動可能区分のテーブルです。</p>
+					<table id="availability-table"></table>
+					<p>変更する場合は、以下のフォームから提出してください。</p>
+					<div class="form-base">
+						<p>変更する部屋が複数ある場合は、<span style="color: red">半角カンマ区切りで</span>入力してください。</p>
+						<div class="form-group">
+							<div class="form-group-left">
+								<label for="change-type">タイプ</label>
+							</div>
+							<div class="form-group-right">
+								<select id="change-type">
+									<option value="close">〇 ➡ ✖</option>
+									<option value="open">✖ ➡ 〇</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="form-group-left">
+								<label for="change-rooms">変更する部屋</label>
+							</div>
+							<div class="form-group-right">
+								<input id="change-rooms"></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="form-group-right">
+								<button onclick="change_availability()">提出！</button>
+							</div>
+						</div>
+						<p id="availability-change-message" style="color: red"></p>
+					</div>
+				</div>
+			</div>
+			<hr />
 			<div id="diary-main">
 				<h3>下級生／総務日誌</h3>
 				<p>ここでは、<span id="diary-type" style="color: red"></span> を書きます。</p>

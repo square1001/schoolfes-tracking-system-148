@@ -180,8 +180,8 @@ function set_penalty_table() {
 		content += "<tr>";
 		content += "<th>#</th>";
 		content += "<th>記入時刻</th>";
-		content += "<th colspan=\"2\">ペナルティー値</th>";
-		content += "<th width=\"420\">理由</th>";
+		content += "<th width=\"225\">ペナルティー値</th>";
+		content += "<th width=\"225\">理由</th>";
 		content += "<th colspan=\"2\">入力者</th>";
 		content += "</tr>";
 		snapshot.forEach(i => {
@@ -190,8 +190,7 @@ function set_penalty_table() {
 			subcontent += "<tr>";
 			subcontent += "<td>" + parseInt(i.key.substr(8)) + "</td>"; // take "xxxxxx" from i.key = "request-xxxxxx"
 			subcontent += "<td>" + (get_time_string(dt)) + "</td>";
-			subcontent += "<td>" + (i.child("penalty-old").val()) + "</td>";
-			subcontent += "<td>" + (i.child("penalty-new").val()) + "</td>";
+			subcontent += "<td>" + (i.child("penalty").val()) + "</td>";
 			subcontent += "<td>" + (i.child("reason").val()) + "</td>";
 			subcontent += "<td>" + (i.child("editor-id").val()) + "</td>";
 			subcontent += "<td>" + (i.child("editor-name").val()) + "</td>";

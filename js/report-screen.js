@@ -54,7 +54,7 @@ function update_room_state_table() {
 									subcontent += "<td rowspan=\"" + current_used.length + "\">" + valid_place[i] + "</td>";
 								}
 								subcontent += "<td>" + current_used[j] + "</td>";
-								subcontent += "<td>" + snapshot_info.child("sandan-" + current_used + "/sandan-name").val() + "</td>";
+								subcontent += "<td>" + snapshot_info.child("sandan-" + current_used).val() + "</td>";
 								subcontent += "</tr>";
 							}
 						}

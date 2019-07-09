@@ -46,7 +46,7 @@ function sandan_input() {
 function change_password_front() {
 	document.getElementById("change-password-verdict").innerHTML = "パスワードを変更中です・・・";
 	var status_object = document.getElementById("password-type");
-	var status = password_type_object.options[password_type_object.selectedIndex].value;
+	var status = status_object.options[status_object.selectedIndex].value;
 	var new_password = document.getElementById("new-password").value;
 	if(new_password == "") {
 		document.getElementById("change-password-verdict").innerHTML = "空のパスワードは使用できません。";

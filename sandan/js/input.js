@@ -1,12 +1,3 @@
-// ---------- VALID PLACE ARRAY ---------- //
-var valid_place = [
-	"1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
-	"H1-1", "H1-2", "H1-3", "H1-4", "H1-5", "H1-6", "H1-7", "H1-8",
-	"H2-1", "H2-2", "H2-3", "H2-4", "H2-5", "H2-6", "H2-7", "H2-8",
-	"H3-1", "H3-2", "H3-3", "H3-4", "H3-5", "H3-6", "H3-7", "H3-8",
-	"予備教室2", "予備教室3", "予備教室4", "その他"
-];
-
 // ---------- SANDAN ACTIVITY REPORT SUBMISSION ---------- //
 function change_verdict_activity(res) {
 	var message;
@@ -21,6 +12,9 @@ function change_verdict_activity(res) {
 	}
 	if(res == -4) {
 		message = "開始しているのに開始報告を出している、あるいは終了しているのに終了報告を出しています。";
+	}
+	if(res == -5) {
+		message = "活動可能区分が「✖」になっています。";
 	}
 	if(res == 0) {
 		document.getElementById("activity-report-place").value = "";
@@ -71,15 +65,9 @@ function report_activity() {
 			var current_used = snapshot_room.child("current_used").val();
 			if(availability == null) availability = true;
 			if(current_used == null) current_used = [];
-			// TODO: Write a program to judge if room can be used today
-			activitiesref.once("value", function(snapshot) {
-				var curkey = -1;
-				snapshot.forEach(i => {
-					if(i.child("place").val() == place && i.child("finish-time").val() == null) {
-						curkey = parseInt(i.key.substr(8), 10); // take "xxxxxx" from "request-xxxxxx"
-					}
-				});
-				if((curkey == -1 && type == "start") || (curkey != -1 && type == "finish")) {
+			if(availability) {
+				current_used = (current_used.indexOf(sandan_id) == -1);
+				if((is_open && type == "start") || (!is_open && type == "finish")) {
 					requestsref.child("current-id").once("value", function(snapshot_id) {
 						nameresref.once("value", function(snapshot_res) {
 							nameediref.once("value", function(snapshot_edi) {
@@ -117,7 +105,10 @@ function report_activity() {
 				else {
 					change_verdict_activity(-4);
 				}
-			});
+			}
+			else {
+				change_verdict_activity(-5);
+			}
 		});
 	}
 	
@@ -259,7 +250,7 @@ function report_progress() {
 	}
 }
 function report_penalty() {
-	var penalty_str = document.getElementById("penalty").value;
+	var penalty = document.getElementById("penalty").value;
 	var reason = document.getElementById("penalty-reason").value;
 	var password = document.getElementById("password-input").value;
 	var send_data = function() {
@@ -278,13 +269,10 @@ function report_penalty() {
 					var nxtkeystr = fillzero(String(nxtkey), 6);
 
 					// ------ Update Penalty ------ //
-					var penalty_old = snapshot.child("penalty").val();
-					if(penalty_old == null) penalty_old = 0;
-					var penalty_new = parseInt(penalty_str);
 					var updates = {};
-					updates["/penalty-old"] = penalty_old;
-					updates["/penalty-new"] = penalty_new;
+					updates["/penalty"] = penalty;
 					updates["/reason"] = reason;
+					updates["/completed"] = false;
 					updates["/time"] = (new Date()).getTime();
 					updates["/editor-id"] = editor_id;
 					updates["/editor-name"] = snapshot_edi.child("name-kanji").val();
@@ -293,7 +281,7 @@ function report_penalty() {
 					updates["/type"] = "penalty";
 					requestsref.child("current-id").set(nxtkey);
 					requestsref.child(get_date_string(new Date())).child("request-" + nxtkeystr).update(updates);
-					inforef.child("penalty").set(penalty_new);
+					inforef.child("penalty").set(penalty);
 					document.getElementById("penalty-report-message").innerHTML = "正常に更新されました。";
 					document.getElementById("penalty").value = "";
 					document.getElementById("penalty-reason").value = "";
@@ -303,21 +291,25 @@ function report_penalty() {
 			});
 		});
 	}
-	if(penalty_str == "" || reason == "") {
+	if(penalty == "" || reason == "") {
 		document.getElementById("penalty-report-message").innerHTML = "入力されていない箇所があります。";
 	}
-	else if(!is_number(penalty_str)) {
-		document.getElementById("penalty-report-message").innerHTML = "ペナルティーには正の整数値を入力してください。";
+	else if(penalty.length < 7) {
+		document.getElementById("penalty-report-message").innerHTML = "ペナルティーは 7 文字以上でなければなりません。";
+	}
+	else if(reason.length < 15) {
+		document.getElementById("penalty-report-message").innerHTML = "理由は 15 文字以上でなければなりません。";
 	}
 	else {
-		var passwordref = firebase.database().ref("password");
-		passwordref.once("value", function(snapshot) {
-			if(password == snapshot.child("/executive").val() || password == snapshot.child("/admin").val()) {
+		check_password(password).then(function(status) {
+			if(status == "executive" || status == "admin") {
 				send_data();
 			}
 			else {
-				document.getElementById("penalty-report-message").innerHTML = "パスワードが正しくないか、入力されていません。";
+				document.getElementById("penalty-report-message").innerHTML = "総務用または管理者のパスワードを入力してください。";
 			}
+		}, function() {
+			document.getElementById("penalty-report-message").innerHTML = "パスワードが正しくありません。";
 		});
 	}
 }

@@ -134,8 +134,7 @@ function get_recent_requests() {
 				if(type == "penalty") {
 					var dt = new Date(i.child("time").val());
 					subcontent += "<td>" + (dt.toLocaleDateString() + " " + dt.toLocaleTimeString()) + "</td>";
-					subcontent += "<td>" + i.child("penalty-old").val();
-					subcontent += "<td>" + i.child("penalty-new").val();
+					subcontent += "<td>" + i.child("penalty").val();
 					subcontent += "<td>" + i.child("reason").val();
 					subcontent += "</tr>";
 					penalty_content += subcontent;
