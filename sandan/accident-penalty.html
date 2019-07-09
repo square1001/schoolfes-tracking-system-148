@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>参団活動記録 - 148th文化祭：参団トラッキングシステム</title>
+		<link type="text/css" rel="stylesheet" href="/css/css.css" />
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-auth.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-database.js"></script>
+		<script>
+		var firebaseConfig = {
+			apiKey: "AIzaSyBKrxJCj-Capk_g2ZpNzC6glKt2selnGzY",
+			authDomain: "bunkasai-tracking-2019.firebaseapp.com",
+			databaseURL: "https://bunkasai-tracking-2019.firebaseio.com",
+			projectId: "bunkasai-tracking-2019",
+			storageBucket: "",
+			messagingSenderId: "288613827333",
+			appId: "1:288613827333:web:6549ae981c103ba0"
+		};
+		firebase.initializeApp(firebaseConfig);
+		</script>
+	</head>
+	<body>
+		<nav id="nav-bar"></nav>
+		<hr />
+		<div class="content">
+			<h2>参団事故・ペナルティーの記録</h2>
+			<p>参団事故・ペナルティーの記録を出します。</p>
+			<div id="accident-list">
+				<h3>参団事故記録</h3>
+				<p>参団の事故の記録をすべて表示します。</p>
+				<p id="accident-record-message" style="color: red"></p>
+				<button onclick="get_accident_records()">取得！</button>
+				<br />
+				<table id="accident-record-table"></table>
+			</div>
+			<hr />
+			<!--
+			<div id="penalty-list">
+				<h3>参団ペナルティー記録</h3>
+				<p>参団のペナルティーの記録をすべて表示します。</p>
+				<button onclick="get_penalty_records()">取得！</button>
+				<p id="penalty-record-message" style="color: red"></p>
+				<br />
+				<table id="penalty-record-table"></table>
+			</div>
+			-->
+		</div>
+		<script src="/js/set-nav.js"></script>
+		<script src="/js/login-check.js"></script>
+		<script src="/js/utility.js"></script>
+		<script src="js/accident-penalty.js"></script>
+		<script>
+			if(document.cookie.indexOf("login-id=") == -1) {
+				window.location.href = "/login.html";
+			}
+		</script>
+	</body>
+</html>

@@ -26,9 +26,9 @@ function sandan_input() {
 	namesref.child("student-" + chief_id).once("value", function(snapshot_chief) {
 		namesref.child("student-" + subchief_id).once("value", function(snapshot_subchief) {
 			namesref.child("student-" + supervisor_id).once("value", function(snapshot_supervisor) {
+				simpleinforef.set(sandan_name);
 				var updates = {};
 				updates["/sandan-name"] = sandan_name;
-				simpleinforef.update(updates);
 				updates["/chief-id"] = (chief_id != "" ? chief_id : null);
 				updates["/chief-name"] = (chief_id != "" ? snapshot_chief.child("name-kanji").val() : null);
 				updates["/subchief-id"] = (subchief_id != "" ? subchief_id : null);
@@ -43,17 +43,17 @@ function sandan_input() {
 		});
 	});
 }
-function change_password() {
+function change_password_front() {
 	document.getElementById("change-password-verdict").innerHTML = "パスワードを変更中です・・・";
-	var password_type_object = document.getElementById("password-type");
-	var password_type = password_type_object.options[password_type_object.selectedIndex].value;
+	var status_object = document.getElementById("password-type");
+	var status = password_type_object.options[password_type_object.selectedIndex].value;
 	var new_password = document.getElementById("new-password").value;
 	if(new_password == "") {
 		document.getElementById("change-password-verdict").innerHTML = "空のパスワードは使用できません。";
 	}
 	else {
-		firebase.database().ref("password/" + password_type).set(new_password).then(function() {
-			document.getElementById("change-password-verdict").innerHTML = "パスワードを変更しました！"
+		change_password(status, new_password, function() {
+			document.getElementById("change-password-verdict").innerHTML = "パスワードが正常に更新されました！";
 		});
 	}
 }

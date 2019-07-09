@@ -30,6 +30,44 @@ function set_activity_table() {
 	var current_sandan = sandan_object.options[sandan_object.selectedIndex].value;
 	var activity_ref = firebase.database().ref("activities/" + current_sandan);
 	activity_ref.once("value", function(snapshot) {
+		var activity_dict = {};
+		var sandan_room_queue = {};
+		snapshot.forEach(i => {
+			var request_id = parseInt(i.key.substr(8)); // take "xxxxxx" from i.key = "request-xxxxxx"
+			var place = i.child("place").val();
+			var type = i.child("type").val();
+			if(type == "activity-start") {
+				activity_dict[request_id] = {
+					start_time: null,
+					finish_time: null,
+					place: "",
+					responsible_id: "",
+					responsible_name: "",
+					editor_start_id: "",
+					editor_start_name: "",
+					editor_finish_id: "",
+					editor_finish_name: ""
+				};
+				activity_dict[request_id].start_time = new Date(i.child("time").val());
+				activity_dict[request_id].editor_start_id = i.child("editor-id").val();
+				activity_dict[request_id].editor_start_name = i.child("editor-name").val();
+				sandan_room_queue[[current_sandan, place]] = request_id;
+			}
+			if(type == "activity-finish") {
+				var pre_id = sandan_room_queue[[current_sandan, place]];
+				if(pre_id) {
+					activity_dict[request_id] = activity_dict[pre_id];
+					delete activity_dict[pre_id];
+					delete sandan_room_queue[[current_sandan, place]];
+				}
+				activity_dict[request_id].finish_time = new Date(i.child("time").val());
+				activity_dict[request_id].editor_finish_id = i.child("editor-id").val();
+				activity_dict[request_id].editor_finish_name = i.child("editor-name").val();
+			}
+			activity_dict[request_id].place = place;
+			activity_dict[request_id].responsible_id = i.child("responsible-id").val();
+			activity_dict[request_id].responsible_name = i.child("responsible-name").val();
+		});
 		var content = "";
 		content += "<tr>";
 		content += "<th>#</th>";
@@ -40,26 +78,22 @@ function set_activity_table() {
 		content += "<th colspan=\"2\">入力者 (開始報告)</th>";
 		content += "<th colspan=\"2\">入力者 (終了報告)</th>";
 		content += "</tr>";
-		snapshot.forEach(i => {
-			var dt_start = i.child("start-time").val();
-			if(dt_start != null) dt_start = new Date(dt_start);
-			var dt_finish = i.child("finish-time").val();
-			if(dt_finish != null) dt_finish = new Date(dt_finish);
+		for(var key in activity_dict) {
 			var subcontent = "";
 			subcontent += "<tr>";
-			subcontent += "<td>" + parseInt(i.key.substr(8)) + "</td>"; // take "xxxxxx" from i.key = "request-xxxxxx"
-			subcontent += "<td>" + (dt_start == null ? "" : dt_start.toLocaleDateString() + " " + dt_start.toLocaleTimeString()) + "</td>";
-			subcontent += "<td>" + (dt_finish == null ? "" : dt_finish.toLocaleDateString() + " " + dt_finish.toLocaleTimeString()) + "</td>";
-			subcontent += "<td>" + (i.child("place").val()) + "</td>";
-			subcontent += "<td>" + (i.child("responsible-id").val()) + "</td>";
-			subcontent += "<td>" + (i.child("responsible-name").val()) + "</td>";
-			subcontent += "<td>" + (i.child("editor-start-id").val()) + "</td>";
-			subcontent += "<td>" + (i.child("editor-start-name").val()) + "</td>";
-			subcontent += "<td>" + (i.child("editor-finish-id").val() != null ? i.child("editor-finish-id").val() : "") + "</td>";
-			subcontent += "<td>" + (i.child("editor-finish-name").val() != null ? i.child("editor-finish-name").val(): "") + "</td>";
+			subcontent += "<td>" + key + "</td>"; // take "xxxxxx" from i.key = "request-xxxxxx"
+			subcontent += "<td>" + (activity_dict[key].start_time == null ? "" : get_time_string(activity_dict[key].start_time)) + "</td>";
+			subcontent += "<td>" + (activity_dict[key].finish_time == null ? "" : get_time_string(activity_dict[key].finish_time)) + "</td>";
+			subcontent += "<td>" + (activity_dict[key].place) + "</td>";
+			subcontent += "<td>" + (activity_dict[key].responsible_id) + "</td>";
+			subcontent += "<td>" + (activity_dict[key].responsible_name) + "</td>";
+			subcontent += "<td>" + (activity_dict[key].editor_start_id) + "</td>";
+			subcontent += "<td>" + (activity_dict[key].editor_start_name) + "</td>";
+			subcontent += "<td>" + (activity_dict[key].editor_finish_id) + "</td>";
+			subcontent += "<td>" + (activity_dict[key].editor_finish_name) + "</td>";
 			subcontent += "</tr>";
 			content += subcontent;
-		});
+		};
 		document.getElementById("activity-table-message").innerHTML = "";
 		document.getElementById("activity-table").innerHTML = content;
 	});
@@ -84,7 +118,7 @@ function set_accident_table() {
 			var subcontent = "";
 			subcontent += "<tr>";
 			subcontent += "<td>" + parseInt(i.key.substr(8)) + "</td>"; // take "xxxxxx" from i.key = "request-xxxxxx"
-			subcontent += "<td>" + (dt.toLocaleDateString() + " " + dt.toLocaleTimeString()) + "</td>";
+			subcontent += "<td>" + (get_time_string(dt)) + "</td>";
 			subcontent += "<td>" + (i.child("content").val()) + "</td>";
 			subcontent += "<td>" + (i.child("editor-id").val()) + "</td>";
 			subcontent += "<td>" + (i.child("editor-name").val()) + "</td>";
@@ -118,7 +152,7 @@ function set_progress_table() {
 			var subcontent = "";
 			subcontent += "<tr>";
 			subcontent += "<td>" + parseInt(i.key.substr(8)) + "</td>"; // take "xxxxxx" from i.key = "request-xxxxxx"
-			subcontent += "<td>" + (dt.toLocaleDateString() + " " + dt.toLocaleTimeString()) + "</td>";
+			subcontent += "<td>" + (get_time_string(dt)) + "</td>";
 			var progress_old = i.child("progress-old").val();
 			var progress_new = i.child("progress-new").val();
 			for(var j = 0; j < 4; ++j) {
@@ -155,7 +189,7 @@ function set_penalty_table() {
 			var subcontent = "";
 			subcontent += "<tr>";
 			subcontent += "<td>" + parseInt(i.key.substr(8)) + "</td>"; // take "xxxxxx" from i.key = "request-xxxxxx"
-			subcontent += "<td>" + (dt.toLocaleDateString() + " " + dt.toLocaleTimeString()) + "</td>";
+			subcontent += "<td>" + (get_time_string(dt)) + "</td>";
 			subcontent += "<td>" + (i.child("penalty-old").val()) + "</td>";
 			subcontent += "<td>" + (i.child("penalty-new").val()) + "</td>";
 			subcontent += "<td>" + (i.child("reason").val()) + "</td>";

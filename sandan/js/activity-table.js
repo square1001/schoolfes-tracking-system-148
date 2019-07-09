@@ -29,7 +29,7 @@ function make_active_days_table() {
 				var subcontent = "";
 				subcontent += "<tr>";
 				subcontent += "<td>" + sandan.key.substr(7) + "</td>"; // take "xx" from "sandan-xx"
-				subcontent += "<td>" + sandan.child("sandan-name").val() + "</td>";
+				subcontent += "<td>" + sandan.val() + "</td>";
 				subcontent += "<td>" + active_days.length + "</td>";
 				for(var i = 0; i < dayslist.length; ++i) {
 					if(active_days.indexOf(dayslist[i]) != -1) {

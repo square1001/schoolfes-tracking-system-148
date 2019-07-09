@@ -24,42 +24,46 @@
 		<nav id="nav-bar"></nav>
 		<hr />
 		<div class="content">
-			<h2>直近の更新</h2>
-			<p>直近の更新を取得します。直近何件かを指定してください。</p>
-			<h3>件数の入力</h3>
+			<h2>活動のデータ取得</h2>
+			<p>指定した日付の入力を取得します。直近何件かを指定してください。</p>
+			<h3>日付・件数の入力</h3>
 			<p>
-				直近
+				<input id="requests-year" style="width: 45px; text-align: center" /> 年 
+				<input id="requests-month" style="width: 45px; text-align: center" /> 月 
+				<input id="requests-date" style="width: 45px; text-align: center" /> 日 
+				の直近
 				<select id="requests-number">
 					<option value="20">20</option>
 					<option value="50">50</option>
 					<option value="100">100</option>
 					<option value="150">150</option>
 					<option value="200">200</option>
-					<option value="250">250</option>
+					<option value="All">All</option>
 				</select>
 				件のデータを取得します。
+				<p id="recent-requests-message" style="color: red"></p>
 			</p>
 			<button onclick="get_recent_requests()">取得！</button>
 			<hr />
 			<div id="recent-requests" style="display: none">
 				<h3>活動開始報告・終了報告リスト</h3>
 				<p>以下、直近の活動開始報告のリストです。</p>
-				<table id="recent-activity-table"></table>
+				<table id="recent-activity-table" style="min-width: 1000px;"></table>
 				<hr />
 				<h3>事故リスト</h3>
 				<p>以下、直近の参団の事故のリストです。</p>
-				<table id="recent-accident-table"></table>
+				<table id="recent-accident-table" style="min-width: 1000px"></table>
 				<hr />
 				<h3>進捗変更リスト</h3>
 				<p>作業の進捗度が変更されたときのリストです。</p>
-				<table id="recent-progress-table"></table>
+				<table id="recent-progress-table" style="min-width: 1000px"></table>
 				<h3>ペナルティーリスト</h3>
 				<p>ペナルティーの値が変化したときのリストです。</p>
-				<table id="recent-penalty-table"></table>
+				<table id="recent-penalty-table" style="min-width: 1000px"></table>
 			</div>
 		</div>
+		<script src="/js/utility.js"></script>
 		<script src="/js/set-nav.js"></script>
-		<script src="/js/login-check.js"></script>
 		<script src="js/recent.js"></script>
 		<script>
 			if(document.cookie.indexOf("login-id=") == -1) {

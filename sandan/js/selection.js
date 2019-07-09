@@ -5,7 +5,7 @@ simpleinforef.once("value", function(snapshot) {
 	snapshot.forEach(i => {
 		var id = i.key.substring(7); // take "xx" from string "sandan-xx"
 		options += "<option value=" + "\"" + i.key + "\"" + ">";
-		options += id + " - " + i.child("sandan-name").val();
+		options += id + " - " + i.val();
 		options += "</option>";
 	});
 	document.getElementById("sandan-option").innerHTML = options;

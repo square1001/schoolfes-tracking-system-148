@@ -31,10 +31,7 @@ function change_verdict_activity(res) {
 	document.getElementById("activity-report-message").innerHTML = message;
 }
 function update_active_day(sandan_id) {
-	var curyear = (new Date()).getFullYear();
-	var curmonth = (new Date()).getMonth() + 1;
-	var curdate = (new Date()).getDate();
-	var today = curyear + "-" + (curmonth < 10 ? "0" : "") + curmonth + "-" + (curdate < 10 ? "0" : "") + curdate;
+	var today = get_date_string(new Date());
 	var activedaysref = firebase.database().ref("sandan-active-days/sandan-" + sandan_id);
 	activedaysref.once("value", function(snapshot) {
 		var active_days = snapshot.val();
@@ -64,8 +61,11 @@ function report_activity() {
 	var nameresref = firebase.database().ref("names/student-" + student_id);
 	var nameediref = firebase.database().ref("names/student-" + editor_id);
 
-	// ---------- Error Judgement ---------- //
-	var success_func = function() {
+	var update_room_state = function(current_used) {
+		roomstateref.child("current-used").set(current_used);
+		firebase.database().ref("room-state/last-update").set((new Date()).getTime());
+	};
+	var send_data = function() {
 		roomstateref.once("value", function(snapshot_room) {
 			var availability = snapshot_room.child("availability").val();
 			var current_used = snapshot_room.child("current_used").val();
@@ -84,37 +84,31 @@ function report_activity() {
 						nameresref.once("value", function(snapshot_res) {
 							nameediref.once("value", function(snapshot_edi) {
 								// ------ Next Key Generation ------ //
-								var nxtkey = curkey;
-								if(type == "start") {
-									nxtkey = snapshot_id.val();
-									nxtkey = (nxtkey == null ? 1 : nxtkey + 1);
-								}
-								var nxtkeystr = nxtkey.toString();
-								while(nxtkeystr.length < 6) nxtkeystr = "0" + nxtkeystr;
+								var nxtkey = snapshot_id.val();
+								nxtkey = (nxtkey == null ? 1 : nxtkey + 1);
+								var nxtkeystr = fillzero(String(nxtkey), 6);
+								requestsref.child("current-id").set(nxtkey);
 
 								// ------ Update Data ------ //
 								var updates = {};
-								if(type == "start") {
-									updates["/start-time"] = (new Date()).getTime();
-									updates["/finish-time"] = null;
-									requestsref.child("current-id").set(nxtkey);
-									current_used.push(sandan_id);
-									update_active_day(sandan_id);
-								}
-								else {
-									updates["/finish-time"] = (new Date()).getTime();
-									current_used.splice(current_used.indexOf(sandan_id), 1);
-								}
+								updates["/type"] = "activity-" + type;
+								updates["/time"] = (new Date()).getTime();
 								updates["/place"] = place;
 								updates["/responsible-id"] = student_id;
 								updates["/responsible-name"] = snapshot_res.child("name-kanji").val();
-								updates["/editor-" + type + "-id"] = editor_id;
-								updates["/editor-" + type + "-name"] = snapshot_edi.child("name-kanji").val();
+								updates["/editor-id"] = editor_id;
+								updates["/editor-name"] = snapshot_edi.child("name-kanji").val();
+								if(type == "start") {
+									current_used.push(sandan_id);
+									update_active_day(sandan_id);
+								}
+								if(type == "finish") {
+									current_used.splice(current_used.indexOf(sandan_id), 1);
+								}
 								activitiesref.child("request-" + nxtkeystr).update(updates);
 								updates["/sandan-id"] = sandan_id;
-								updates["/type"] = "activity";
-								requestsref.child("request-" + nxtkeystr).update(updates);
-								roomstateref.child("current-used").set(current_used);
+								requestsref.child(get_date_string(new Date())).child("request-" + nxtkeystr).update(updates);
+								update_room_state(current_used);
 								change_verdict_activity(0);
 							});
 						});
@@ -126,6 +120,8 @@ function report_activity() {
 			});
 		});
 	}
+	
+	// ---------- Error Judgement ---------- //
 	if(document.cookie.indexOf("login-id=") == -1) {
 		// when NOT LOGGED IN
 		change_verdict_activity(-1);
@@ -136,8 +132,8 @@ function report_activity() {
 		change_verdict_activity(-2);
 		return;
 	}
-	name_match(student_id, student_name).then(function() {
-		success_func();
+	check_name(student_id, student_name).then(function() {
+		send_data();
 	}, function() {
 		change_verdict_activity(-3); // when NOT-MATCHED
 	});
@@ -156,8 +152,7 @@ function report_accident() {
 		requestsref.child("current-id").once("value", function(snapshot_id) {
 			var nxtkey = snapshot_id.val();
 			nxtkey = (nxtkey == null ? 1 : nxtkey + 1);
-			var nxtkeystr = nxtkey.toString();
-			while(nxtkeystr.length < 6) nxtkeystr = "0" + nxtkeystr;
+			var nxtkeystr = fillzero(String(nxtkey), 6);
 			
 			// ------ Update Data ------ //
 			var updates = {};
@@ -169,7 +164,7 @@ function report_accident() {
 			updates["/sandan-id"] = sandan_id;
 			updates["/type"] = "accident";
 			requestsref.child("current-id").set(nxtkey);
-			requestsref.child("request-" + nxtkeystr).update(updates);
+			requestsref.child(get_date_string(new Date())).child("request-" + nxtkeystr).update(updates);
 		});
 	});
 }
@@ -194,9 +189,9 @@ function get_progress_penalty() {
 }
 
 // ---------- Report Progress / Penalty ---------- //
-function is_number(str) {
+function is_number_empty(str) {
 	if(str == "") return true;
-	if(/^\+?(0|[1-9]\d*)$/.test(str)) return true;
+	if(is_number(str)) return true;
 	return false;
 }
 function report_progress() {
@@ -217,8 +212,7 @@ function report_progress() {
 				requestsref.child("current-id").once("value", function(snapshot_id) {
 					var nxtkey = snapshot_id.val();
 					nxtkey = (nxtkey == null ? 1 : nxtkey + 1);
-					var nxtkeystr = nxtkey.toString();
-					while(nxtkeystr.length < 6) nxtkeystr = "0" + nxtkeystr;
+					var nxtkeystr = fillzero(String(nxtkey), 6)
 
 					// ------ Update Progress ------ //
 					var progress = snapshot.child("progress").val();
@@ -239,7 +233,7 @@ function report_progress() {
 					updates["/sandan-id"] = sandan_id;
 					updates["/type"] = "progress";
 					requestsref.child("current-id").set(nxtkey);
-					requestsref.child("request-" + nxtkeystr).update(updates);
+					requestsref.child(get_date_string(new Date())).child("request-" + nxtkeystr).update(updates);
 					inforef.child("progress").set(progress_new);
 					document.getElementById("progress-report-message").innerHTML = "正常に更新されました。";
 					document.getElementById("progress-type-1").value = "";
@@ -254,7 +248,7 @@ function report_progress() {
 	if(data_type_1 == "" && data_type_2 == "" && data_type_3 == "" && data_type_4 == "") {
 		document.getElementById("progress-report-message").innerHTML = "値が入力されていません。";
 	}
-	else if(!is_number(data_type_1) || !is_number(data_type_2) || !is_number(data_type_3) || !is_number(data_type_4)) {
+	else if(!is_number_empty(data_type_1) || !is_number_empty(data_type_2) || !is_number_empty(data_type_3) || !is_number_empty(data_type_4)) {
 		document.getElementById("progress-report-message").innerHTML = "正の整数値を入力してください。";
 	}
 	else if(parseInt(data_type_1) > 100 || parseInt(data_type_2) > 100 || parseInt(data_type_3) > 100 || parseInt(data_type_4) > 100) {
@@ -281,10 +275,9 @@ function report_penalty() {
 				requestsref.child("current-id").once("value", function(snapshot_id) {
 					var nxtkey = snapshot_id.val();
 					nxtkey = (nxtkey == null ? 1 : nxtkey + 1);
-					var nxtkeystr = nxtkey.toString();
-					while(nxtkeystr.length < 6) nxtkeystr = "0" + nxtkeystr;
+					var nxtkeystr = fillzero(String(nxtkey), 6);
 
-					// ------ Update Progress ------ //
+					// ------ Update Penalty ------ //
 					var penalty_old = snapshot.child("penalty").val();
 					if(penalty_old == null) penalty_old = 0;
 					var penalty_new = parseInt(penalty_str);
@@ -299,7 +292,7 @@ function report_penalty() {
 					updates["/sandan-id"] = sandan_id;
 					updates["/type"] = "penalty";
 					requestsref.child("current-id").set(nxtkey);
-					requestsref.child("request-" + nxtkeystr).update(updates);
+					requestsref.child(get_date_string(new Date())).child("request-" + nxtkeystr).update(updates);
 					inforef.child("penalty").set(penalty_new);
 					document.getElementById("penalty-report-message").innerHTML = "正常に更新されました。";
 					document.getElementById("penalty").value = "";

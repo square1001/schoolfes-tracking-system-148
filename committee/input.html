@@ -70,12 +70,12 @@
 				</div>
 			</div>
 		</div>
+		<script src="/js/utility.js"></script>
 		<script src="/js/set-nav.js"></script>
-		<script src="/js/login-check.js"></script>
 		<script src="js/input.js"></script>
 		<script>
 			var status = get_status();
-			if(status == "none") {
+			if(status == "normal") {
 				document.getElementById("diary-type").innerHTML = "下級生日誌";
 				document.getElementById("stats-link-main").style = "display: none";
 			}

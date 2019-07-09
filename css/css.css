@@ -109,6 +109,9 @@ button {
 	color: white;
 	border: 4px ridge gray;
 }
+table {
+	margin: 16px 0px 16px 0px;
+}
 th {
 	font-size: 16px;
 	font-weight: bold;

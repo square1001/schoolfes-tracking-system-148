@@ -134,6 +134,7 @@
 					</div>
 					<div class="form-group-right">
 						<select id="password-type">
+							<option value="normal">下級生用</option>
 							<option value="executive">総務用</option>
 							<option value="admin">Admin</option>
 						</select>
@@ -149,7 +150,7 @@
 				</div>
 				<div class="form-group">
 					<div class="form-group-right">
-						<button onclick="change_password()">
+						<button onclick="change_password_front()">
 							提出
 						</button>
 					</div>
@@ -157,15 +158,14 @@
 				<p id="change-password-verdict" style="color: red"></p>
 			</div>
 		</div>
-		<script src="js/set-nav.js"></script>
-		<script src="/js/login-check.js"></script>
+		<script src="/js/utility.js"></script>
+		<script src="/js/set-nav.js"></script>
 		<script src="js/admin.js"></script>
 		<script>
 			if(document.cookie.indexOf("login-id=") == -1) {
 				window.location.href = "/login.html";
 			}
-			var status = document.cookie.substr(document.cookie.indexOf("status="));
-			if(status.substr(0, 4) == "none" || status.substr(0, 4) == "executive") {
+			if(get_status() != "admin") {
 				window.location.href = "/index.html";
 			}
 		</script>
