@@ -77,7 +77,9 @@ function get_penalty_records() {
 			});
 			document.getElementById("penalty-record-table").innerHTML = content;
 			document.getElementById("penalty-record-message").innerHTML = "データが正常に取得できました！";
-			document.getElementById("penalty-change-form").style = "display: block";
+			if(get_status() == "executive" || get_status() == "admin") {
+				document.getElementById("penalty-change-form").style = "display: block";
+			}
 		});
 	});
 }
@@ -104,14 +106,23 @@ function change_penalty_completeness() {
 		document.getElementById("penalty-change-message").innerHTML = "リクエスト #" + merge_string(fail_req2, ',') + " は" + (change_type == "complete" ? "既に完了しています" : "完了していません") + "。";
 	}
 	else {
-		for(var i = 0; i < reqarr.length; ++i) {
-			var ref = firebase.database().ref("penalties");
-			ref = ref.child("sandan-" + penalty_dict[reqarr[i]].sandan_id);
-			ref = ref.child("request-" + fillzero(String(reqarr[i]), 6));
-			ref = ref.child("completed");
-			ref.set((change_type == "complete" ? true : false));
-		}
-		document.getElementById("penalty-change-message").innerHTML = "リクエスト #" + merge_string(reqarr, ",") + "の完了状況が更新されました！" + (change_type == "complete" ? "✖ ➡ 〇" : "〇 ➡ ✖");
-		get_penalty_records();
+		check_password(password).then(function(status) {
+			if(status == "executive" || status == "admin") {
+				for(var i = 0; i < reqarr.length; ++i) {
+					var ref = firebase.database().ref("penalties");
+					ref = ref.child("sandan-" + penalty_dict[reqarr[i]].sandan_id);
+					ref = ref.child("request-" + fillzero(String(reqarr[i]), 6));
+					ref = ref.child("completed");
+					ref.set((change_type == "complete" ? true : false));
+				}
+				document.getElementById("penalty-change-message").innerHTML = "リクエスト #" + merge_string(reqarr, ",") + "の完了状況が更新されました！" + (change_type == "complete" ? "✖ ➡ 〇" : "〇 ➡ ✖");
+				get_penalty_records();
+			}
+			else {
+				document.getElementById("penalty-change-message").innerHTML = "総務用または管理者のパスワードを入力してください。";
+			}
+		}, function() {
+			document.getElementById("penalty-change-message").innerHTML = "パスワードが正しくありません。";
+		});
 	}
 }
