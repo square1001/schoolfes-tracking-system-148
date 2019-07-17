@@ -161,20 +161,17 @@ function report_accident() {
 }
 
 // ---------- Get Progress ---------- //
-function get_progress_penalty() {
+function get_progress() {
 	var sandan_object = document.getElementById("sandan-option");
 	var sandan_id = sandan_object.options[sandan_object.selectedIndex].value.substring(7); // takes "xx" from "sandan-xx"
 	var inforef = firebase.database().ref("sandan-info/sandan-" + sandan_id);
 	inforef.once("value", function(snapshot) {
 		var progress = snapshot.child("progress").val();
 		if(progress == null) progress = [ 0, 0, 0, 0 ];
-		var penalty = snapshot.child("penalty").val();
-		if(penalty == null) penalty = 0;
 		document.getElementById("progress-type-1-label").innerHTML = "パネル作業 (現在：" + progress[0] + " %)";
 		document.getElementById("progress-type-2-label").innerHTML = "特殊組木作業 (現在：" + progress[1] + " %)";
 		document.getElementById("progress-type-3-label").innerHTML = "輪転作業 (現在：" + progress[2] + " %)";
 		document.getElementById("progress-type-4-label").innerHTML = "その他屋内作業 (現在：" + progress[3] + " %)";
-		document.getElementById("penalty-label").innerHTML = "ペナルティー (現在：" + penalty + ")";
 		document.getElementById("input-main").style = "display: block;";
 	});
 }
@@ -231,7 +228,7 @@ function report_progress() {
 					document.getElementById("progress-type-2").value = "";
 					document.getElementById("progress-type-3").value = "";
 					document.getElementById("progress-type-4").value = "";
-					get_progress_penalty();
+					get_progress();
 				});
 			});
 		});
@@ -286,7 +283,6 @@ function report_penalty() {
 					document.getElementById("penalty").value = "";
 					document.getElementById("penalty-reason").value = "";
 					document.getElementById("password-input").value = "";
-					get_progress_penalty();
 				});
 			});
 		});
