@@ -61,6 +61,14 @@ function is_valid_date(year, month, date) {
 	if(date < 1 || limit < date) return false;
 	return true;
 }
+function merge_string(arr, merger) {
+	var ans = "";
+	for(var i = 0; i < arr.length; ++i) {
+		if(i >= 1) ans += merger + " ";
+		ans += arr[i];
+	}
+	return ans;
+}
 function split_string(str, splitter) {
 	var ans = [];
 	var pre = 0;

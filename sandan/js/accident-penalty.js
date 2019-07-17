@@ -36,6 +36,7 @@ function get_accident_records() {
 		});
 	});
 }
+var penalty_dict = {};
 function get_penalty_records() {
 	var penaltyref = firebase.database().ref("penalties");
 	var simpleinforef = firebase.database().ref("sandan-info-simple");
@@ -70,11 +71,47 @@ function get_penalty_records() {
 					subcontent += "<td>" + i.child("reason").val() + "</td>";
 					subcontent += "<td>" + (i.child("completed").val() ? "〇" : "✖") + "</td>";
 					subcontent += "</tr>";
+					penalty_dict[request_id] = { completed: i.child("completed").val(), sandan_id: sandan_id };
 				});
 				content += subcontent;
 			});
 			document.getElementById("penalty-record-table").innerHTML = content;
 			document.getElementById("penalty-record-message").innerHTML = "データが正常に取得できました！";
+			document.getElementById("penalty-change-form").style = "display: block";
 		});
 	});
+}
+function change_penalty_completeness() {
+	var change_type_object = document.getElementById("change-type");
+	var change_type = change_type_object.options[change_type_object.selectedIndex].value;
+	var reqarr = split_string(document.getElementById("change-penalties").value, ',');
+	for(var i = 0; i < reqarr.length; ++i) {
+		reqarr[i] = parseInt(reqarr[i]);
+	}
+	var fail_req1 = [], fail_req2 = [];
+	for(var i = 0; i < reqarr.length; ++i) {
+		if(penalty_dict[reqarr[i]] == undefined) {
+			fail_req1.push(reqarr[i]);
+		}
+		else if(penalty_dict[reqarr[i]].completed != (change_type == "complete" ? false : true)) {
+			fail_req2.push(reqarr[i]);
+		}
+	}
+	if(fail_req1.length > 0) {
+		document.getElementById("penalty-change-message").innerHTML = "リクエスト #" + merge_string(fail_req1, ',') + " は存在しないか、ペナルティーのリクエストではありません。";
+	}
+	else if(fail_req2.length > 0) {
+		document.getElementById("penalty-change-message").innerHTML = "リクエスト #" + merge_string(fail_req2, ',') + " は" + (change_type == "complete" ? "既に完了しています" : "完了していません") + "。";
+	}
+	else {
+		for(var i = 0; i < reqarr.length; ++i) {
+			var ref = firebase.database().ref("penalties");
+			ref = ref.child("sandan-" + penalty_dict[reqarr[i]].sandan_id);
+			ref = ref.child("request-" + fillzero(String(reqarr[i]), 6));
+			ref = ref.child("completed");
+			ref.set((change_type == "complete" ? true : false));
+		}
+		document.getElementById("penalty-change-message").innerHTML = "リクエスト #" + merge_string(reqarr, ",") + "の完了状況が更新されました！" + (change_type == "complete" ? "✖ ➡ 〇" : "〇 ➡ ✖");
+		get_penalty_records();
+	}
 }

@@ -62,11 +62,11 @@ function report_activity() {
 	var send_data = function() {
 		roomstateref.once("value", function(snapshot_room) {
 			var availability = snapshot_room.child("availability").val();
-			var current_used = snapshot_room.child("current_used").val();
+			var current_used = snapshot_room.child("current-used").val();
 			if(availability == null) availability = true;
 			if(current_used == null) current_used = [];
 			if(availability) {
-				current_used = (current_used.indexOf(sandan_id) == -1);
+				var is_open = (current_used.indexOf(sandan_id) == -1);
 				if((is_open && type == "start") || (!is_open && type == "finish")) {
 					requestsref.child("current-id").once("value", function(snapshot_id) {
 						nameresref.once("value", function(snapshot_res) {

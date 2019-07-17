@@ -111,6 +111,7 @@ button {
 }
 table {
 	margin: 16px 0px 16px 0px;
+	border-collapse: collapse;
 }
 th {
 	font-size: 16px;
