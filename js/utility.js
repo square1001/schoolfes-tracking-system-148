@@ -8,6 +8,15 @@ var valid_place = [
 ];
 var valid_place_sep = [ 0, 10, 18, 26, 34, 38 ]; // Separating-Row Index of valid place representing as table
 
+// ---------- MATERIAL ARRAY ---------- //
+var material_name = [
+	"玄翁", "鋸", "鑢", "錐", "バール", "メジャー", "ペンチ", "ニッパー", "ドライバー", "差金", "電動ドリル",
+	"はさみ", "カッター", "定規", "のり", "ボンド", "ポスカ細", "ポスカ中", "ステープラー", "その他筆記用具",
+	"ガムテープ布", "ガムテープ紙", "セロハンテープ", "マスキングテープ", "ビニールテープ", "両面テープ", "養生テープ", "すずらんテープ",
+	"桶", "刷毛", "ローラー", "筆", "亀の子だわし", "金だわし", "ブルーシート", "その他掃除用具"
+];
+var material_sep = [ 0, 11, 20, 28, 36 ];
+
 // ---------- Convenient Functions ---------- //
 function fillzero(str, num) {
 	// Fill string str with leading zeros.

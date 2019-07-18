@@ -76,8 +76,7 @@ function report_activity() {
 								nxtkey = (nxtkey == null ? 1 : nxtkey + 1);
 								var nxtkeystr = fillzero(String(nxtkey), 6);
 								requestsref.child("current-id").set(nxtkey);
-
-								// ------ Update Data ------ //
+									// ------ Update Data ------ //
 								var updates = {};
 								updates["/type"] = "activity-" + type;
 								updates["/time"] = (new Date()).getTime();
@@ -128,6 +127,100 @@ function report_activity() {
 	}, function() {
 		change_verdict_activity(-3); // when NOT-MATCHED
 	});
+}
+
+// ---------- About Material ---------- //
+function material_type_change() {
+	var material_type_object = document.getElementById("material-type");
+	var material_type = material_type_object.options[material_type_object.selectedIndex].value;
+	if(material_type == "none") {
+		document.getElementById("material-list").innerHTML = "";
+		document.getElementById("material-button").style = "display: none";
+	}
+	else {
+		var material_type_id = parseInt(material_type.substring(14)); // take "x" from "material-type-x"
+		var content = "";
+		content += "<table style=\"border: 0px\">";
+		var cnt = 0;
+		for(var i = material_sep[material_type_id - 1]; i < material_sep[material_type_id]; ++i) {
+			if(cnt % 4 == 0) {
+				if(cnt != 0) content += "</tr>";
+				content += "<tr>";
+			}
+			++cnt;
+			content += "<td>";
+			content += material_name[i];
+			content += " × ";
+			content += "<input style=\"width: 40px\" id=\"material-" + fillzero(String(i), 2) + "\"></input>";
+			content += "</td>";
+		}
+		content += "</tr>";
+		content += "</table>";
+		document.getElementById("material-list").innerHTML = content;
+		document.getElementById("material-button").style = "display: block";
+	}
+}
+function report_material() {
+	var sandan_object = document.getElementById("sandan-option");
+	var sandan_id = sandan_object.options[sandan_object.selectedIndex].value.substring(7); // takes "xx" from "sandan-xx"
+	var material_direction_object = document.getElementById("material-direction");
+	var material_direction = material_direction_object.options[material_direction_object.selectedIndex].value;
+	var material_type_object = document.getElementById("material-type");
+	var material_type = material_type_object.options[material_type_object.selectedIndex].value;
+	var material_type_id = parseInt(material_type.substring(14)); // take "x" from "material-type-x"
+	var materialref = firebase.database().ref("sandan-info/sandan-" + sandan_id + "/materials");
+	var inc = new Array(material_name.length).fill(0);
+	var failure = 0;
+	for(var i = material_sep[material_type_id - 1]; i < material_sep[material_type_id]; ++i) {
+		var numstr = document.getElementById("material-" + fillzero(String(i), 2)).value;
+		if(numstr != "" && (!is_number(numstr) || numstr == "0")) {
+			failure = Math.min(failure, -3);
+		}
+		else if(numstr != "") {
+			inc[i] = parseInt(numstr);
+			if(material_direction == "return") inc[i] *= -1;
+		}
+	}
+	if(inc == (new Array(material_name.length).fill(0))) {
+		failure = Math.min(failure, -2);
+	}
+	var send_message = function() {
+		if(failure == -3) {
+			document.getElementById("material-report-message").innerHTML = "各入力場所には空白か正の整数を入力してください。";
+		}
+		if(failure == -2) {
+			document.getElementById("material-report-message").innerHTML = "何も入力されていません。";
+		}
+		if(failure == -1) {
+			document.getElementById("material-report-message").innerHTML = "借りた個数以上の資材を返そうとしています。";
+		}
+		if(failure == 0) {
+			document.getElementById("material-report-message").innerHTML = "資材を" + (material_direction == "borrow" ? "借りる" : "返す") + "ことに成功しました！";
+		}
+	};
+	var send_data = function() {
+		materialref.once("value", function(snapshot) {
+			var arr = snapshot.val();
+			if(arr == null) arr = new Array(material_name.length).fill(0);
+			var nxtarr = arr;
+			for(var i = material_sep[material_type_id - 1]; i < material_sep[material_type_id]; ++i) {
+				nxtarr[i] += inc[i];
+			}
+			if(Math.min.apply(null, nxtarr) < 0) {
+				failure = Math.min(failure, -1);
+				send_message(failure);
+			}
+			else {
+				materialref.set(nxtarr);
+				send_message(failure);
+				for(var i = material_sep[material_type_id - 1]; i < material_sep[material_type_id]; ++i) {
+					document.getElementById("material-" + fillzero(String(i), 2)).value = "";
+				}
+			}
+		});
+	};
+	if(failure < 0) send_message(failure);
+	else send_data();
 }
 
 // ---------- Report Accident ---------- //

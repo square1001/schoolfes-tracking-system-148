@@ -19,6 +19,14 @@ function set_information_list() {
 		if(snapshot.child("contact").val() != null) {
 			content += "<li>連絡先：　" + snapshot.child("contact").val() + "</li>";
 		}
+		var material_num = snapshot.child("materials").val();
+		var material_str_arr = [];
+		for(var i = 0; i < material_num.length; ++i) {
+			if(material_num[i] != 0) {
+				material_str_arr.push(material_name[i] + " ×" + String(material_num[i]));
+			}
+		}
+		content += "<li>借りている資材：  " + (material_str_arr.length == 0 ? "なし" : merge_string(material_str_arr, "、")) + "</li>";
 		document.getElementById("info-list").innerHTML = content;
 	});
 }

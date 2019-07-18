@@ -80,8 +80,50 @@
 					</div>
 				</div>
 				<hr />
+				<div id="material-main">
+					<h3>参団資材の貸し借り</h3>
+					<p>現在の資材の貸し借り状況は <a href="stats.html">参団の記録</a> で見ることができます。</p>
+					<div class="form-base">
+						<div class="form-group">
+							<div class="form-group-left">
+								<label for="material-direction">借りる or 返す</label>
+							</div>
+							<div class="form-group-right">
+								<select id="material-direction">
+									<option value="borrow">資材を借りる</option>
+									<option value="return">資材を返す</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="form-group-left">
+								<label for="material-type">資材のタイプ</label>
+							</div>
+							<div class="form-group-right">
+								<select id="material-type" onchange="material_type_change()">
+									<option value="none">種類を選択してください</option>
+									<option value="material-type-1">1 - 工具類</option>
+									<option value="material-type-2">2 - 筆記用具類</option>
+									<option value="material-type-3">3 - テープ類</option>
+									<option value="material-type-4">4 - ペンキ用具</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<span id="material-list"></span>
+						</div>
+						<div class="form-group" id="material-button">
+							<div class="form-group-right">
+								<button onclick="report_material()">提出！</button>
+							</div>
+						</div>
+						<p id="material-report-message" style="color: red"></p>
+					</div>
+				</div>
+				<hr />
 				<div id="accident-main">
 					<h3>参団事故報告</h3>
+					<p>参団で起こった事故を記入します。</p>
 					<div class="form-base">
 						<div class="form-group">
 							<p>参団の事故内容を記述してください。(150 字以内くらいにはまとめてほしい)</p>
@@ -191,7 +233,7 @@
 				}
 				else {				
 					document.getElementById("input-main").style = "display: block";
-					get_progress_penalty();
+					get_progress();
 				}
 			}
 			var status = get_status();
