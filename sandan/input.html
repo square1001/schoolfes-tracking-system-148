@@ -60,7 +60,7 @@
 								<label for="activity-report-student-id">活動責任者の 4 桁番号</label>
 							</div>
 							<div class="form-group-right">
-								<input type="text" id="activity-report-student-id" required />
+								<input type="text" id="activity-report-student-id" oninput="activity_report_id_change()" />
 							</div>
 						</div>
 						<div class="form-group">
@@ -68,7 +68,7 @@
 								<label for="activity-report-student-name">活動責任者の氏名</label>
 							</div>
 							<div class="form-group-right">
-								<input type="text" id="activity-report-student-name" required />
+								<span id="activity-report-student-name"></span>
 							</div>
 						</div>
 						<div class="form-group">

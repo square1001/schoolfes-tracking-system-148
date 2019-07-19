@@ -1,28 +1,36 @@
 // ---------- SANDAN ACTIVITY REPORT SUBMISSION ---------- //
-function change_verdict_activity(res) {
-	var message;
-	if(res == -1) {
-		message = "ログアウトされています。";
+var student_name;
+function activity_report_id_change() {
+	var send_message = function(message_type, val) {
+		var content = "";
+		if(message_type == 1) content = "Loading...";
+		if(message_type == 0) content = val;
+		if(message_type == -1) content = "?";
+		if(message_type == -2) content = "";
+		document.getElementById("activity-report-student-name").innerHTML = content;
 	}
-	if(res == -2) {
-		message = "活動場所が正しくありません。";
+	send_message(1, "");
+	student_name = "";
+	var id_str = document.getElementById("activity-report-student-id").value;
+	if(id_str == "") {
+		send_message(-2, "");
 	}
-	if(res == -3) {
-		message = "活動責任者の 4 桁番号または氏名が正しくありません。";
+	else if(!is_number(id_str) || id_str.length != 4) {
+		send_message(-1, "");
 	}
-	if(res == -4) {
-		message = "開始しているのに開始報告を出している、あるいは終了しているのに終了報告を出しています。";
+	else {
+		var namesref = firebase.database().ref("names/student-" + id_str);
+		namesref.once("value", function(snapsnot) {
+			var name_kanji = snapsnot.child("name-kanji").val();
+			if(name_kanji == null) {
+				send_message(-1, "");
+			}
+			else {
+				send_message(0, name_kanji);
+				student_name = name_kanji;
+			}
+		});
 	}
-	if(res == -5) {
-		message = "活動可能区分が「✖」になっています。";
-	}
-	if(res == 0) {
-		document.getElementById("activity-report-place").value = "";
-		document.getElementById("activity-report-student-id").value = "";
-		document.getElementById("activity-report-student-name").value = "";
-		message = "入力に成功しました！"
-	}
-	document.getElementById("activity-report-message").innerHTML = message;
 }
 function update_active_day(sandan_id) {
 	var today = get_date_string(new Date());
@@ -42,7 +50,6 @@ function report_activity() {
 	var type = type_object.options[type_object.selectedIndex].value;
 	var place = document.getElementById("activity-report-place").value;
 	var student_id = document.getElementById("activity-report-student-id").value;
-	var student_name = document.getElementById("activity-report-student-name").value;
 	var sandan_object = document.getElementById("sandan-option");
 	var sandan_id = sandan_object.options[sandan_object.selectedIndex].value.substring(7); // takes "xx" from "sandan-xx"
 	var requestsref = firebase.database().ref("requests");
@@ -54,7 +61,31 @@ function report_activity() {
 	var editor_id = get_editor_id();
 	var nameresref = firebase.database().ref("names/student-" + student_id);
 	var nameediref = firebase.database().ref("names/student-" + editor_id);
-
+	var change_verdict_activity = function(res) {
+		var message;
+		if(res == -1) {
+			message = "ログアウトされています。";
+		}
+		if(res == -2) {
+			message = "活動場所が正しくありません。";
+		}
+		if(res == -3) {
+			message = "活動責任者の 4 桁番号がありえないものになっています。";
+		}
+		if(res == -4) {
+			message = "開始しているのに開始報告を出している、あるいは終了しているのに終了報告を出しています。";
+		}
+		if(res == -5) {
+			message = "活動可能区分が「✖」になっています。";
+		}
+		if(res == 0) {
+			document.getElementById("activity-report-place").value = "";
+			document.getElementById("activity-report-student-id").value = "";
+			document.getElementById("activity-report-student-name").value = "";
+			message = "入力に成功しました！"
+		}
+		document.getElementById("activity-report-message").innerHTML = message;
+	}
 	var update_room_state = function(current_used) {
 		roomstateref.child("current-used").set(current_used);
 		firebase.database().ref("room-state/last-update").set((new Date()).getTime());
@@ -122,11 +153,12 @@ function report_activity() {
 		change_verdict_activity(-2);
 		return;
 	}
-	check_name(student_id, student_name).then(function() {
+	if(student_name != "") {
 		send_data();
-	}, function() {
+	}
+	else {
 		change_verdict_activity(-3); // when NOT-MATCHED
-	});
+	};
 }
 
 // ---------- About Material ---------- //
