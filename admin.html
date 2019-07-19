@@ -49,10 +49,10 @@
 				</div>
 				<div class="form-group">
 					<div class="form-group-left">
-						<label for="student-name-katakana">名前 (カタカナ)</label>
+						<label for="student-name-hiragana">名前 (ひらがな)</label>
 					</div>
 					<div class="form-group-right">
-						<input type="text" id="student-name-katakana" />
+						<input type="text" id="student-name-hiragana" />
 					</div>
 				</div>
 				<div class="form-group">
@@ -63,6 +63,24 @@
 					</div>
 				</div>
 				<p id="addname-verdict" style="color: red"></p>
+			</div>
+			<h3>名前を追加 (tuple-string)</h3>
+			<ul>
+				<li>tuple-string 形式では、各生徒を "(4 桁番号, 名前漢字, 名前ひらがな)" で表す形式です。</li>
+				<li>例えば、"(5348, 米田 寛峻, よねだ ひろたか)" みたいな感じです。</li>
+			</ul>
+			<div class="form-base">
+				<p>以下の欄に、追加する名前を tuple-string 形式で入力してください。</p>
+				<p>複数の名前が入力される場合、各 tuple を<span style="color: red">半角カンマ区切りで</span>入力してください。</p>
+				<div class="form-group">
+					<textarea id="student-tuple" rows="8" cols="64"></textarea>
+				</div>
+				<div class="form-group">
+					<button onclick="addname_tuple()">
+						提出
+					</button>
+				</div>
+				<p id="addname-verdict2" style="color: red"></p>
 			</div>
 			<h3>参団の情報の編集</h3>
 			<ul>

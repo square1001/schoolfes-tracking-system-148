@@ -3,13 +3,31 @@ function addname() {
 	var dbref = firebase.database().ref();
 	var student_id = document.getElementById("student-id").value;
 	var student_name_kanji = document.getElementById("student-name-kanji").value;
-	var student_name_katakana = document.getElementById("student-name-katakana").value;
+	var student_name_hiragana = document.getElementById("student-name-hiragana").value;
 	var nameref = dbref.child("names");
 	var updates = {};
 	updates["/student-" + student_id + "/name-kanji"] = student_name_kanji;
-	updates["/student-" + student_id + "/name-katakana"] = student_name_katakana;
+	updates["/student-" + student_id + "/name-hiragana"] = student_name_hiragana;
 	nameref.update(updates).then(function() {
 		document.getElementById("addname-verdict").innerHTML = "名前が正常に追加されました！";
+	});
+}
+function addname_tuple() {
+	document.getElementById("addname-verdict2").innerHTML = "データを送信中です・・・";
+	var student_tuple_str = document.getElementById("student-tuple").value;
+	var student_tuple_arr = split_tuple_string(student_tuple_str, ',');
+	var namesref = firebase.database().ref("names");
+	var updates = {};
+	for(var i = 0; i < student_tuple_arr.length; ++i) {
+		var student_tuple = split_string(student_tuple_arr[i].substring(1, student_tuple_arr[i].length - 1), ',');
+		var student_id = student_tuple[0];
+		var student_name_kanji = space_halving(student_tuple[1]);
+		var student_name_hiragana = space_halving(student_tuple[2]);
+		updates["/student-" + student_id + "/name-kanji"] = student_name_kanji;
+		updates["/student-" + student_id + "/name-hiragana"] = student_name_hiragana;
+	}
+	namesref.update(updates).then(function() {
+		document.getElementById("addname-verdict2").innerHTML = "名前が正常に追加されました！";
 	});
 }
 function sandan_input() {

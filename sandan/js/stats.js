@@ -20,6 +20,7 @@ function set_information_list() {
 			content += "<li>連絡先：　" + snapshot.child("contact").val() + "</li>";
 		}
 		var material_num = snapshot.child("materials").val();
+		if(material_num == null) material_num = [];
 		var material_str_arr = [];
 		for(var i = 0; i < material_num.length; ++i) {
 			if(material_num[i] != 0) {

@@ -96,6 +96,30 @@ function split_string(str, splitter) {
 	}
 	return ans;
 }
+function split_tuple_string(str, splitter) {
+	var ans = [];
+	var pre = 0, depth = 0;
+	for(var i = 0; i < str.length; ++i) {
+		if(str[i] == '(') ++depth;
+		if(str[i] == ')') --depth;
+		if(depth == 0 && str[i] == splitter) {
+			ans.push(str.substring(pre, i));
+			pre = i + 1;
+		}
+	}
+	if(pre != str.length) {
+		ans.push(str.substring(pre, str.length));
+	}
+	for(var i = 0; i < ans.length; ++i) {
+		while(ans[i].length > 0 && ans[i][0] == ' ') ans[i] = ans[i].substring(1);
+		while(ans[i].length > 0 && ans[i][ans[i].length - 1] == ' ') ans[i] = ans[i].substring(0, ans[i].length - 1);
+	}
+	return ans;
+}
+function space_halving(str) {
+	// change "　" to " "
+	return str.split("　").join(" ").split(" ").filter(word => word.length != 0).join(" ");
+}
 
 // ---------- Retrieve Cookie Informations ---------- //
 function get_editor_id() {
@@ -118,7 +142,7 @@ function check_name(student_id, student_name) {
 		var namesref = firebase.database().ref().child("names/student-" + student_id);
 		namesref.once("value", function(snapshot) {
 			if(!snapshot.exists()) reject();
-			var matched = (snapshot.child("name-katakana").val() == student_name);
+			var matched = (snapshot.child("name-hiragana").val() == student_name);
 			if(matched) resolve();
 			else reject();
 		});
