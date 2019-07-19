@@ -58,6 +58,7 @@ function report_activity() {
 	var room_id_str = String(room_id);
 	while(room_id_str.length < 2) room_id_str = "0" + room_id_str;
 	var roomstateref = firebase.database().ref("room-state/room-" + room_id_str);
+	var sandaninforef = firebase.database().ref("sandan-info/sandan-" + sandan_id);
 	var editor_id = get_editor_id();
 	var nameresref = firebase.database().ref("names/student-" + student_id);
 	var nameediref = firebase.database().ref("names/student-" + editor_id);
@@ -78,6 +79,9 @@ function report_activity() {
 		if(res == -5) {
 			message = "活動可能区分が「✖」になっています。";
 		}
+		if(res == -6) {
+			message = "資材が返されていないのに終了報告を出そうとしています。";
+		}
 		if(res == 0) {
 			document.getElementById("activity-report-place").value = "";
 			document.getElementById("activity-report-student-id").value = "";
@@ -92,53 +96,65 @@ function report_activity() {
 	};
 	var send_data = function() {
 		roomstateref.once("value", function(snapshot_room) {
-			var availability = snapshot_room.child("availability").val();
-			var current_used = snapshot_room.child("current-used").val();
-			if(availability == null) availability = true;
-			if(current_used == null) current_used = [];
-			if(availability) {
-				var is_open = (current_used.indexOf(sandan_id) == -1);
-				if((is_open && type == "start") || (!is_open && type == "finish")) {
-					requestsref.child("current-id").once("value", function(snapshot_id) {
-						nameresref.once("value", function(snapshot_res) {
-							nameediref.once("value", function(snapshot_edi) {
-								// ------ Next Key Generation ------ //
-								var nxtkey = snapshot_id.val();
-								nxtkey = (nxtkey == null ? 1 : nxtkey + 1);
-								var nxtkeystr = fillzero(String(nxtkey), 6);
-								requestsref.child("current-id").set(nxtkey);
-									// ------ Update Data ------ //
-								var updates = {};
-								updates["/type"] = "activity-" + type;
-								updates["/time"] = (new Date()).getTime();
-								updates["/place"] = place;
-								updates["/responsible-id"] = student_id;
-								updates["/responsible-name"] = snapshot_res.child("name-kanji").val();
-								updates["/editor-id"] = editor_id;
-								updates["/editor-name"] = snapshot_edi.child("name-kanji").val();
-								if(type == "start") {
-									current_used.push(sandan_id);
-									update_active_day(sandan_id);
-								}
-								if(type == "finish") {
-									current_used.splice(current_used.indexOf(sandan_id), 1);
-								}
-								activitiesref.child("request-" + nxtkeystr).update(updates);
-								updates["/sandan-id"] = sandan_id;
-								requestsref.child(get_date_string(new Date())).child("request-" + nxtkeystr).update(updates);
-								update_room_state(current_used);
-								change_verdict_activity(0);
+			sandaninforef.once("value", function(snapshot_info) {
+				var using_room_arr = snapshot_info.child("using-room").val();
+				var material_arr = snapshot_info.child("materials").val();
+				var availability = snapshot_room.child("availability").val();
+				var current_used = snapshot_room.child("current-used").val();
+				if(availability == null) availability = true;
+				if(current_used == null) current_used = [];
+				if(using_room_arr == null) using_room_arr = [];
+				if(material_arr == null) material_arr = new Array(material_name.length).fill(0);
+				if(availability && (type == "start" || using_room_arr.length >= 2 || Math.max.apply(null, material_arr) == 0)) {
+					var is_open = (current_used.indexOf(sandan_id) == -1);
+					if((is_open && type == "start") || (!is_open && type == "finish")) {
+						requestsref.child("current-id").once("value", function(snapshot_id) {
+							nameresref.once("value", function(snapshot_res) {
+								nameediref.once("value", function(snapshot_edi) {
+									// ------ Next Key Generation ------ //
+									var nxtkey = snapshot_id.val();
+									nxtkey = (nxtkey == null ? 1 : nxtkey + 1);
+									var nxtkeystr = fillzero(String(nxtkey), 6);
+									requestsref.child("current-id").set(nxtkey);
+										// ------ Update Data ------ //
+									var updates = {};
+									updates["/type"] = "activity-" + type;
+									updates["/time"] = (new Date()).getTime();
+									updates["/place"] = place;
+									updates["/responsible-id"] = student_id;
+									updates["/responsible-name"] = snapshot_res.child("name-kanji").val();
+									updates["/editor-id"] = editor_id;
+									updates["/editor-name"] = snapshot_edi.child("name-kanji").val();
+									if(type == "start") {
+										current_used.push(sandan_id);
+										using_room_arr.push(room_id);
+										update_active_day(sandan_id);
+									}
+									if(type == "finish") {
+										current_used.splice(current_used.indexOf(sandan_id), 1);
+										using_room_arr.splice(using_room_arr.indexOf(room_id), 1);
+									}
+									activitiesref.child("request-" + nxtkeystr).update(updates);
+									updates["/sandan-id"] = sandan_id;
+									requestsref.child(get_date_string(new Date())).child("request-" + nxtkeystr).update(updates);
+									update_room_state(current_used);
+									sandaninforef.child("using-room").set(using_room_arr);
+									change_verdict_activity(0);
+								});
 							});
 						});
-					});
+					}
+					else {
+						change_verdict_activity(-4);
+					}
+				}
+				else if(!availability) {
+					change_verdict_activity(-5);
 				}
 				else {
-					change_verdict_activity(-4);
+					change_verdict_activity(-6);
 				}
-			}
-			else {
-				change_verdict_activity(-5);
-			}
+			});
 		});
 	}
 	
@@ -201,27 +217,31 @@ function report_material() {
 	var material_type = material_type_object.options[material_type_object.selectedIndex].value;
 	var material_type_id = parseInt(material_type.substring(14)); // take "x" from "material-type-x"
 	var materialref = firebase.database().ref("sandan-info/sandan-" + sandan_id + "/materials");
+	var usingroomref = firebase.database().ref("sandan-info/sandan-" + sandan_id + "/using-room");
 	var inc = new Array(material_name.length).fill(0);
 	var failure = 0;
 	for(var i = material_sep[material_type_id - 1]; i < material_sep[material_type_id]; ++i) {
 		var numstr = document.getElementById("material-" + fillzero(String(i), 2)).value;
 		if(numstr != "" && (!is_number(numstr) || numstr == "0")) {
-			failure = Math.min(failure, -3);
+			failure = Math.min(failure, -4);
 		}
 		else if(numstr != "") {
 			inc[i] = parseInt(numstr);
 			if(material_direction == "return") inc[i] *= -1;
 		}
 	}
-	if(inc == (new Array(material_name.length).fill(0))) {
-		failure = Math.min(failure, -2);
+	if(Math.max.apply(null, inc) == 0) {
+		failure = Math.min(failure, -3);
 	}
 	var send_message = function() {
-		if(failure == -3) {
+		if(failure == -4) {
 			document.getElementById("material-report-message").innerHTML = "各入力場所には空白か正の整数を入力してください。";
 		}
-		if(failure == -2) {
+		if(failure == -3) {
 			document.getElementById("material-report-message").innerHTML = "何も入力されていません。";
+		}
+		if(failure == -2) {
+			document.getElementById("material-report-message").innerHTML = "活動開始報告を出していない参団は、資材を借りることができません。";
 		}
 		if(failure == -1) {
 			document.getElementById("material-report-message").innerHTML = "借りた個数以上の資材を返そうとしています。";
@@ -231,23 +251,35 @@ function report_material() {
 		}
 	};
 	var send_data = function() {
-		materialref.once("value", function(snapshot) {
-			var arr = snapshot.val();
-			if(arr == null) arr = new Array(material_name.length).fill(0);
-			var nxtarr = arr;
-			for(var i = material_sep[material_type_id - 1]; i < material_sep[material_type_id]; ++i) {
-				nxtarr[i] += inc[i];
-			}
-			if(Math.min.apply(null, nxtarr) < 0) {
-				failure = Math.min(failure, -1);
-				send_message(failure);
+		usingroomref.once("value", function(snapshot_room) {
+			var using_room = snapshot_room.val();
+			if(using_room == null) using_room = [];
+			if(using_room.length >= 1) {
+				// this sandan is currently active
+				materialref.once("value", function(snapshot) {
+					var arr = snapshot.val();
+					if(arr == null) arr = new Array(material_name.length).fill(0);
+					var nxtarr = arr;
+					for(var i = material_sep[material_type_id - 1]; i < material_sep[material_type_id]; ++i) {
+						nxtarr[i] += inc[i];
+					}
+					if(Math.min.apply(null, nxtarr) < 0) {
+						failure = Math.min(failure, -1);
+						send_message(failure);
+					}
+					else {
+						materialref.set(nxtarr);
+						send_message(failure);
+						for(var i = material_sep[material_type_id - 1]; i < material_sep[material_type_id]; ++i) {
+							document.getElementById("material-" + fillzero(String(i), 2)).value = "";
+						}
+					}
+				});
 			}
 			else {
-				materialref.set(nxtarr);
+				// this sandan is currently inactive
+				failure = Math.min(failure, -2);
 				send_message(failure);
-				for(var i = material_sep[material_type_id - 1]; i < material_sep[material_type_id]; ++i) {
-					document.getElementById("material-" + fillzero(String(i), 2)).value = "";
-				}
 			}
 		});
 	};

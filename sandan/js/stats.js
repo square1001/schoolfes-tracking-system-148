@@ -19,6 +19,12 @@ function set_information_list() {
 		if(snapshot.child("contact").val() != null) {
 			content += "<li>連絡先：　" + snapshot.child("contact").val() + "</li>";
 		}
+		var using_room_arr = snapshot.child("using-room").val();
+		var using_room_str_arr = [];
+		for(var i = 0; i < using_room_arr.length; ++i) {
+			using_room_str_arr.push(valid_place[using_room_arr[i]]);
+		}
+		content += "<li>現在活動している場所：　" + (using_room_str_arr.length == 0 ? "なし" : merge_string(using_room_str_arr, "、")) + "</li>";
 		var material_num = snapshot.child("materials").val();
 		if(material_num == null) material_num = [];
 		var material_str_arr = [];

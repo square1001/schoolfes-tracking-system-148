@@ -142,7 +142,7 @@ function check_name(student_id, student_name) {
 		var namesref = firebase.database().ref().child("names/student-" + student_id);
 		namesref.once("value", function(snapshot) {
 			if(!snapshot.exists()) reject();
-			var matched = (snapshot.child("name-hiragana").val() == student_name);
+			var matched = (snapshot.child("name-hiragana").val() == space_halving(student_name));
 			if(matched) resolve();
 			else reject();
 		});
