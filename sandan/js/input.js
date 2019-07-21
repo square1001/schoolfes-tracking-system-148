@@ -230,7 +230,7 @@ function report_material() {
 			if(material_direction == "return") inc[i] *= -1;
 		}
 	}
-	if(Math.max.apply(null, inc) == 0) {
+	if(Math.max.apply(null, inc) == 0 && Math.min.apply(null, inc) == 0) {
 		failure = Math.min(failure, -3);
 	}
 	var send_message = function() {
