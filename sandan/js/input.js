@@ -427,31 +427,28 @@ function report_penalty() {
 		var editor_id = get_editor_id();
 		var nameediref = firebase.database().ref("names/student-" + editor_id);
 		nameediref.once("value", function(snapshot_edi) {
-			inforef.once("value", function(snapshot) {
-				requestsref.child("current-id").once("value", function(snapshot_id) {
-					var nxtkey = snapshot_id.val();
-					nxtkey = (nxtkey == null ? 1 : nxtkey + 1);
-					var nxtkeystr = fillzero(String(nxtkey), 6);
-
-					// ------ Update Penalty ------ //
-					var updates = {};
-					updates["/penalty"] = penalty;
-					updates["/reason"] = reason;
-					updates["/completed"] = false;
-					updates["/time"] = (new Date()).getTime();
-					updates["/editor-id"] = editor_id;
-					updates["/editor-name"] = snapshot_edi.child("name-kanji").val();
-					penaltyref.child("request-" + nxtkeystr).update(updates);
-					updates["/sandan-id"] = sandan_id;
-					updates["/type"] = "penalty";
-					requestsref.child("current-id").set(nxtkey);
-					requestsref.child(get_date_string(new Date())).child("request-" + nxtkeystr).update(updates);
-					inforef.child("penalty").set(penalty);
-					document.getElementById("penalty-report-message").innerHTML = "正常に更新されました。";
-					document.getElementById("penalty").value = "";
-					document.getElementById("penalty-reason").value = "";
-					document.getElementById("password-input").value = "";
-				});
+			requestsref.child("current-id").once("value", function(snapshot_id) {
+				var nxtkey = snapshot_id.val();
+				nxtkey = (nxtkey == null ? 1 : nxtkey + 1);
+				var nxtkeystr = fillzero(String(nxtkey), 6);
+				
+				// ------ Update Penalty ------ //
+				var updates = {};
+				updates["/penalty"] = penalty;
+				updates["/reason"] = reason;
+				updates["/completed"] = false;
+				updates["/time"] = (new Date()).getTime();
+				updates["/editor-id"] = editor_id;
+				updates["/editor-name"] = snapshot_edi.child("name-kanji").val();
+				penaltyref.child("request-" + nxtkeystr).update(updates);
+				updates["/sandan-id"] = sandan_id;
+				updates["/type"] = "penalty";
+				requestsref.child("current-id").set(nxtkey);
+				requestsref.child(get_date_string(new Date())).child("request-" + nxtkeystr).update(updates);
+				document.getElementById("penalty-report-message").innerHTML = "正常に更新されました。";
+				document.getElementById("penalty").value = "";
+				document.getElementById("penalty-reason").value = "";
+				document.getElementById("password-input").value = "";
 			});
 		});
 	}
