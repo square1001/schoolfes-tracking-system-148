@@ -20,6 +20,7 @@ function set_information_list() {
 			content += "<li>連絡先：　" + snapshot.child("contact").val() + "</li>";
 		}
 		var using_room_arr = snapshot.child("using-room").val();
+		if(using_room_arr == null) using_room_arr = [];
 		var using_room_str_arr = [];
 		for(var i = 0; i < using_room_arr.length; ++i) {
 			using_room_str_arr.push(valid_place[using_room_arr[i]]);

@@ -296,25 +296,35 @@ function report_accident() {
 	var accilistref = firebase.database().ref("accidents/sandan-" + sandan_id);
 	var editor_id = get_editor_id();
 	var nameediref = firebase.database().ref("names/student-" + editor_id);
-	nameediref.once("value", function(snapshot_edi) {
-		requestsref.child("current-id").once("value", function(snapshot_id) {
-			var nxtkey = snapshot_id.val();
-			nxtkey = (nxtkey == null ? 1 : nxtkey + 1);
-			var nxtkeystr = fillzero(String(nxtkey), 6);
-			
-			// ------ Update Data ------ //
-			var updates = {};
-			updates["/content"] = content;
-			updates["/time"] = (new Date()).getTime();
-			updates["/editor-id"] = editor_id;
-			updates["/editor-name"] = snapshot_edi.child("name-kanji").val();
-			accilistref.child("request-" + nxtkeystr).update(updates);
-			updates["/sandan-id"] = sandan_id;
-			updates["/type"] = "accident";
-			requestsref.child("current-id").set(nxtkey);
-			requestsref.child(get_date_string(new Date())).child("request-" + nxtkeystr).update(updates);
+	var send_data = function() {
+		nameediref.once("value", function(snapshot_edi) {
+			requestsref.child("current-id").once("value", function(snapshot_id) {
+				var nxtkey = snapshot_id.val();
+				nxtkey = (nxtkey == null ? 1 : nxtkey + 1);
+				var nxtkeystr = fillzero(String(nxtkey), 6);
+				
+				// ------ Update Data ------ //
+				var updates = {};
+				updates["/content"] = content;
+				updates["/time"] = (new Date()).getTime();
+				updates["/editor-id"] = editor_id;
+				updates["/editor-name"] = snapshot_edi.child("name-kanji").val();
+				accilistref.child("request-" + nxtkeystr).update(updates);
+				updates["/sandan-id"] = sandan_id;
+				updates["/type"] = "accident";
+				requestsref.child("current-id").set(nxtkey);
+				requestsref.child(get_date_string(new Date())).child("request-" + nxtkeystr).update(updates);
+				document.getElementById("accident-report-message").innerHTML = "データが正常に入力されました！";
+			});
 		});
-	});
+	};
+	document.getElementById("accident-report-message").innerHTML = "データを入力しています・・・";
+	if(content.length < 10) {
+		document.getElementById("accident-report-message").innerHTML = "事故内容は 10 文字以上でなければなりません。";
+	}
+	else {
+		send_data();
+	}
 }
 
 // ---------- Get Progress ---------- //
@@ -390,6 +400,7 @@ function report_progress() {
 			});
 		});
 	}
+	document.getElementById("progress-report-message").innerHTML = "データを入力しています・・・";
 	if(data_type_1 == "" && data_type_2 == "" && data_type_3 == "" && data_type_4 == "") {
 		document.getElementById("progress-report-message").innerHTML = "値が入力されていません。";
 	}

@@ -38,7 +38,7 @@ function update_room_state_table() {
 						}
 						subcontent += "</tr>";
 						subcontent += "</table>";
-						content += "<td style=\"vertical-align: top; padding: 0px; margin: 0px; width: 100%; height: 100%\">" + subcontent + "</td>";
+						content += "<td style=\"vertical-align: top; padding: 0px; margin: 0px; height: 100%\">" + subcontent + "</td>";
 					}
 					content += "</tr>";
 				}
