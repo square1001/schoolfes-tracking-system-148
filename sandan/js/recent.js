@@ -58,6 +58,19 @@ function get_recent_requests() {
 							delete activity_dict[pre_id];
 							delete sandan_room_queue[[current_sandan, place]];
 						}
+						else {
+							activity_dict[request_id] = {
+								start_time: null,
+								finish_time: null,
+								place: "",
+								responsible_id: "",
+								responsible_name: "",
+								editor_start_id: "",
+								editor_start_name: "",
+								editor_finish_id: "",
+								editor_finish_name: ""
+							};
+						}
 						activity_dict[request_id].finish_time = new Date(i.child("time").val());
 						activity_dict[request_id].editor_finish_id = i.child("editor-id").val();
 						activity_dict[request_id].editor_finish_name = i.child("editor-name").val();
