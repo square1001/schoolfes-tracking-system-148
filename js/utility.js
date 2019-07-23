@@ -130,7 +130,7 @@ function get_editor_id() {
 function get_status() {
 	var pos = document.cookie.indexOf("status=");
 	if(pos == -1) return "";
-	if(document.cookie.substring(pos + 7, pos + 11) == "normal") return "normal";
+	if(document.cookie.substring(pos + 7, pos + 13) == "normal") return "normal";
 	if(document.cookie.substring(pos + 7, pos + 16) == "executive") return "executive";
 	if(document.cookie.substring(pos + 7, pos + 12) == "admin") return "admin";
 	return "";
