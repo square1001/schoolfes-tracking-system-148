@@ -87,6 +87,7 @@ function change_penalty_completeness() {
 	var change_type_object = document.getElementById("change-type");
 	var change_type = change_type_object.options[change_type_object.selectedIndex].value;
 	var reqarr = split_string(document.getElementById("change-penalties").value, ',');
+	var password = document.getElementById("password-input").value;
 	for(var i = 0; i < reqarr.length; ++i) {
 		reqarr[i] = parseInt(reqarr[i]);
 	}

@@ -105,6 +105,7 @@ function get_recent_requests() {
 			penalty_content += "<th>時刻</th>";
 			penalty_content += "<th width=\"225\">ペナルティー内容</th>";
 			penalty_content += "<th width=\"225\">理由</th>";
+			penalty_content += "<th width=\"50\">状況</th>";
 			penalty_content += "</tr>";
 			snapshot.forEach(i => {
 				var sandan_id = i.child("sandan-id").val();
@@ -149,6 +150,7 @@ function get_recent_requests() {
 					subcontent += "<td>" + (dt.toLocaleDateString() + " " + dt.toLocaleTimeString()) + "</td>";
 					subcontent += "<td>" + i.child("penalty").val();
 					subcontent += "<td>" + i.child("reason").val();
+					subcontent += "<td>" + (i.child("completed").val() ? "〇" : "✖") + "</td>";
 					subcontent += "</tr>";
 					penalty_content += subcontent;
 				}
