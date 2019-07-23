@@ -20,7 +20,7 @@ function update_room_state_table() {
 						if(current_used == null) current_used = [];
 						// ------ Make one cell of the table ------ //
 						var subcontent = "";
-						subcontent += "<table style=\"width: 100px; padding: 0px; border: 0px; margin: 0px\">"
+						subcontent += "<table style=\"width: 110px; padding: 0px; border: 0px; margin: 0px\">"
 						subcontent += "<tr><td>" + valid_place[j] + "</td></tr>";
 						subcontent += "<tr style=\"height: 70px; overflow: auto\">";
 						if(!availability) {

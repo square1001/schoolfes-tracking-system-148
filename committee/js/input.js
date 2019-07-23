@@ -190,7 +190,7 @@ function report_attendance() {
 	namesref.once("value", function(snapshot) {
 		var mistake_rows = "";
 		for(var i = 0; i < people; ++i) {
-			var correct_name = snapshot.child("student-" + attendance[i].id + "/name-katakana").val();
+			var correct_name = snapshot.child("student-" + attendance[i].id + "/name-hiragana").val();
 			if(attendance[i].name != correct_name) {
 				if(mistake_rows != "") mistake_rows += ", ";
 				mistake_rows += (i + 1);

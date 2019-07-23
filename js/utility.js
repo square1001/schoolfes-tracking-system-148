@@ -4,9 +4,9 @@ var valid_place = [
 	"H1-1", "H1-2", "H1-3", "H1-4", "H1-5", "H1-6", "H1-7", "H1-8",
 	"H2-1", "H2-2", "H2-3", "H2-4", "H2-5", "H2-6", "H2-7", "H2-8",
 	"H3-1", "H3-2", "H3-3", "H3-4", "H3-5", "H3-6", "H3-7", "H3-8",
-	"予備教室2", "予備教室3", "予備教室4", "その他"
+	"予備教室2", "予備教室3", "予備教室4", "第2選択教室", "第3選択教室", "その他"
 ];
-var valid_place_sep = [ 0, 10, 18, 26, 34, 38 ]; // Separating-Row Index of valid place representing as table
+var valid_place_sep = [ 0, 10, 18, 26, 34, 40 ]; // Separating-Row Index of valid place representing as table
 
 // ---------- MATERIAL ARRAY ---------- //
 var material_name = [
