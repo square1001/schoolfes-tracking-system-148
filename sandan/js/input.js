@@ -1,5 +1,12 @@
 // ---------- SANDAN ACTIVITY REPORT SUBMISSION ---------- //
-var student_name;
+var place_options = "<option value=\"none\">選択してください</option>";
+for(var i = 0; i < valid_place.length; ++i) {
+	place_options += "<option value=\"" + fillzero(String(i), 2) + "\">";
+	place_options += fillzero(String(i), 2) + " - " + valid_place[i];
+	place_options += "</option>";
+}
+document.getElementById("activity-report-place").innerHTML = place_options;
+var student_name = "";
 function activity_report_id_change() {
 	var send_message = function(message_type, val) {
 		var content = "";
@@ -7,6 +14,7 @@ function activity_report_id_change() {
 		if(message_type == 0) content = val;
 		if(message_type == -1) content = "?";
 		if(message_type == -2) content = "";
+		student_name = val;
 		document.getElementById("activity-report-student-name").innerHTML = content;
 	}
 	send_message(1, "");
@@ -27,7 +35,6 @@ function activity_report_id_change() {
 			}
 			else {
 				send_message(0, name_kanji);
-				student_name = name_kanji;
 			}
 		});
 	}
@@ -49,7 +56,9 @@ function report_activity() {
 	// ---------- Getting Variables ---------- //
 	var type_object = document.getElementById("activity-report-type");
 	var type = type_object.options[type_object.selectedIndex].value;
-	var place = document.getElementById("activity-report-place").value;
+	var place_object = document.getElementById("activity-report-place");
+	var place_id = place_object.options[place_object.selectedIndex].value;
+	var place = (place_id != "none" ? valid_place[parseInt(place_id)] : "");
 	var student_id = document.getElementById("activity-report-student-id").value;
 	var sandan_object = document.getElementById("sandan-option");
 	var sandan_id = sandan_object.options[sandan_object.selectedIndex].value.substring(7); // takes "xx" from "sandan-xx"
@@ -70,7 +79,7 @@ function report_activity() {
 			message = "ログアウトされています。";
 		}
 		if(res == -2) {
-			message = "活動場所が正しくありません。";
+			message = "活動場所が選択されていません。";
 		}
 		if(res == -3) {
 			message = "活動責任者の 4 桁番号がありえないものになっています。";
@@ -194,7 +203,7 @@ function report_activity() {
 		change_verdict_activity(-1);
 		return;
 	}
-	if(valid_place.indexOf(place) == -1) {
+	if(place_id == "none") {
 		// when PLACE IS INVALID
 		change_verdict_activity(-2);
 		return;
