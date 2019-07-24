@@ -103,7 +103,7 @@ function report_activity() {
 			message = "同じリクエストについて同時に 2 回「提出」ボタンを押したので、そのうち片方が受理されます。";
 		}
 		if(res == 0) {
-			document.getElementById("activity-report-place").value = "";
+			document.getElementById("activity-report-place").selectedIndex = "0";
 			document.getElementById("activity-report-student-id").value = "";
 			document.getElementById("activity-report-student-name").value = "";
 			message = "入力に成功しました！"
