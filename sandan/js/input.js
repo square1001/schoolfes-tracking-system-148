@@ -106,6 +106,7 @@ function report_activity() {
 			document.getElementById("activity-report-place").selectedIndex = "0";
 			document.getElementById("activity-report-student-id").value = "";
 			document.getElementById("activity-report-student-name").value = "";
+			activity_report_id_change();
 			message = "入力に成功しました！"
 		}
 		if(res != 1) activity_waiting_response = false;
