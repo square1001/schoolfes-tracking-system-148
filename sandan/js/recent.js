@@ -9,7 +9,7 @@ function get_recent_requests() {
 	reqyear = parseInt(reqyear);
 	reqmonth = parseInt(reqmonth - 1);
 	reqdate = parseInt(reqdate);
-	if(!is_valid_date(reqyear, reqmonth, reqdate)) {
+	if(!is_valid_date(reqyear, reqmonth + 1, reqdate)) {
 		document.getElementById("recent-requests-message").innerHTML = "1 年 1 月 1 日から 9999 年 12 月 31 日までの正しい日付を入力してください。";
 		return;
 	}
